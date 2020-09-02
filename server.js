@@ -13,7 +13,7 @@ const app = express();
 //   origin: "http://localhost:8081",
 // };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(upload.array());
 
 // parse requests of content-type - application/json

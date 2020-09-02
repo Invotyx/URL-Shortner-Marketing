@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
     },
     email: {
-      type: Sequelize.STRING(1234),
+      type: Sequelize.STRING(30),
       allowNull: true,
     },
     phone_number: {

@@ -12,11 +12,11 @@ module.exports = (sequelize, Sequelize) => {
     },
 
     device_name: {
-      type: Sequelize.STRING(50),
+      type: Sequelize.STRING(30),
       allowNull: false,
     },
     device_id: {
-      type: Sequelize.STRING(),
+      type: Sequelize.STRING(200),
       allowNull: false,
     },
   });

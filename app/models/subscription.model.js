@@ -13,6 +13,12 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    payment_method: {
+      type: Sequelize.ENUM({
+        values: ["apple", "google"],
+      }),
+      allowNull: false,
+    },
     expires_at: {
       type: Sequelize.DATE,
       allowNull: true,

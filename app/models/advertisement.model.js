@@ -39,7 +39,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: 0,
         allowNull: false,
       },
-      status: {
+      is_default: {
         type: Sequelize.BOOLEAN,
         defaultValue: 0,
         allowNull: false,

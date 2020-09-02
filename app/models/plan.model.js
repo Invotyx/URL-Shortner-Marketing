@@ -6,6 +6,15 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
     },
 
+    apple_product_id: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    google_product_id: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+
     title: {
       type: Sequelize.STRING(50),
       allowNull: false,
