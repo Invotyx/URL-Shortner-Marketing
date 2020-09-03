@@ -1,13 +1,4 @@
-<<<<<<< HEAD
-# Sharely-app
-=======
-# Node.js – Sharely App
 
-npm install
-```
+# Creating a Rest API with JWT authentication and role based authorization using TypeScript…
 
-### Run
-```
-node server.js
-```
->>>>>>> b415c3ea8a69aaeecde4e944ac34341172d8edea
+
