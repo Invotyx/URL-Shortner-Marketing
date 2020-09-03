@@ -9,5 +9,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true
-  }
+  },
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
 }
