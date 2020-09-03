@@ -20,7 +20,7 @@ import {User} from "./User";
     @Column({length: 30})
     provider: string;
   
-    @Column('text')
+    @Column()
     social_id: string;
         
     @ManyToOne(type => User)

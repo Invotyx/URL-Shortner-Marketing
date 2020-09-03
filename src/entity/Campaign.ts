@@ -16,9 +16,9 @@ import {
     Google = 'google',
   }
 
-  @Entity('compaigns')
+  @Entity('campaigns')
   // @Unique(["username"])
-  export class Compaign {
+  export class Campaign {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -51,6 +51,6 @@ import {
     updated_at: Date;
     
     @Column({ name: 'deleted_at', default: null, nullable:true })
-    deletedAt: Date;
+    deleted_at: Date;
   }
   

@@ -10,7 +10,7 @@ import { DeleteDateColumn } from 'typeorm-plus'
 import {User} from './User';
 
   enum Display {
-    Title = 'Title',
+    Title = 'title',
     Image = 'image',
     Both = 'both'
   }
@@ -54,7 +54,7 @@ import {User} from './User';
     updated_at: Date;
 
     @Column({ name: 'deleted_at', default: null, nullable:true })
-    deletedAt: Date;
+    deleted_at: Date;
 
   }
   

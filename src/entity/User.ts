@@ -5,10 +5,16 @@ import {
   BeforeInsert,
   CreateDateColumn,
   UpdateDateColumn,
+  getRepository,
+  MoreThan,
+  Connection,
+  Between
 } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import config from "../config/config";
+import {Subscription} from './Subscription';
+import { Advertisement } from "./Advertisement";
 
 @Entity('users')
 // @Unique(["username"])
@@ -56,9 +62,29 @@ export class User {
     const token = jwt.sign(
       { userId: this.id },
       config.jwtSecret,
-      { expiresIn: "1h" }
+      { expiresIn: "10d" }
     );
     return token;
+  }
+
+  async getCurrentSubscriptionPlan(){
+    const subscriptionRepository = getRepository(Subscription);
+    const subscription = await subscriptionRepository.findOne({
+      where:{
+        user:this,
+        expires_at:MoreThan(new Date())
+      },
+      relations:['plan']
+    })
+    return subscription;
+  }
+
+  async getCurrentSubscriptionAds(created_at, expires_at){
+    const advertisemnts = await getRepository(Advertisement).find({
+      created_at: Between(created_at, expires_at),
+      deleted_at:null
+    });
+    return advertisemnts;
   }
   // checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
   //   return bcrypt.compareSync(unencryptedPassword, this.password);
