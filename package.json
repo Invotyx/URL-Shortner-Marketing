@@ -21,6 +21,7 @@
     "cors": "^2.8.5",
     "date-fns": "^2.16.1",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
     "helmet": "^4.1.0",
     "joi": "^17.2.1",
     "jsonwebtoken": "^8.5.1",
@@ -38,7 +39,6 @@
     "prod": "tsc && node ./build/index.js",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
-
   },
   "license": "MIT"
 }

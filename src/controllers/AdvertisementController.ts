@@ -5,10 +5,22 @@ import * as Joi from "joi";
 import { Advertisement } from "../entity/Advertisement";
 // import { Subscription } from "../entity/Subscription";
 
-export const create = async (req: Request, res: Response) => {
+interface MulterRequest extends Request {
+    file: any;
+}
+
+export const create = async (req: Request , res: Response) => {
 
     
-    const user = req['user']; 
+    const user = req['user'];
+    const _file = ((req as MulterRequest).file);
+    if(!_file){
+        res.status(400).json({
+            success: false,
+            message:"attachment not provided",
+            data:{}
+        })
+    }
     
     //CHECK CURRENT SUBSCRIPTION PLAN
     const currentSubscriptionPlan = await user.getCurrentSubscriptionPlan();
@@ -42,13 +54,15 @@ export const create = async (req: Request, res: Response) => {
     const {title, description, attachment, link, display} = req.body;
     try{
     // CREATE AD
+
         let advertisement = new Advertisement();
         advertisement.title = title;
         advertisement.description = description;
-        advertisement.attachment = attachment;
+        advertisement.attachment = _file.path;
         advertisement.link = link;
         advertisement.display = display;
         advertisement.user = user
+
 
         await advertisementRepository.save(advertisement);
         return res.status(200).send({
@@ -71,6 +85,8 @@ export const update = async (req: Request, res: Response) => {
 
     const user = req['user']; 
     const id = req.params.id; 
+    const _file = ((req as MulterRequest).file);
+    console.log(_file);
     const ad_exists = await getRepository(Advertisement).findOne({
         where:{
             id: id,
@@ -92,13 +108,20 @@ export const update = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: error.details[0].message, data: [] });
     
-    const {title, description, attachment, link, display} = req.body;
+    // const {title, description, attachment, link, display} = req.body;
+    const title = req.body.title || ad_exists.title;
+    const description = req.body.description || ad_exists.description;
+    const link = req.body.link || ad_exists.link;
+    const attachment = _file.path || ad_exists.attachment;
+    const display = req.body.display || ad_exists.display;
+    const is_default = req.body.is_default || ad_exists.is_default;
+
     try{
     // CREATE AD
         const advertisement = await getRepository(Advertisement)
         .createQueryBuilder()
         .update(Advertisement)
-        .set({ title, description, attachment, link, display })
+        .set({ title, description, attachment, link, display, is_default })
         .where("id = :id", { id })
         .execute();
 
@@ -236,7 +259,6 @@ const validateAdvertisement = (advertisement) => {
     const schema = Joi.object({
       title: Joi.string().min(5).required(),
       description: Joi.string(),
-      attachment: Joi.string().uri().required(),
       link: Joi.string().uri().required(),
       display: Joi.string().valid('title', 'image', 'both').required(),
     });
@@ -247,8 +269,9 @@ const validateUpdateAdvertisement = (advertisement) => {
     const schema = Joi.object({
       title: Joi.string().min(5),
       description: Joi.string().min(10),
-      attachment: Joi.string().uri(),
+    //   attachment: Joi.string().uri(),
       link: Joi.string().uri(),
+      is_default: Joi.valid('0','1'),
       display: Joi.string().valid('title', 'image', 'both'),
     });
     return schema.validate(advertisement);

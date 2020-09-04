@@ -1,6 +1,8 @@
 import { Router } from "express";
 import * as Subcription from "../controllers/SubscriptionController";
 import { checkJwt } from "../middlewares/checkJwt";
+import * as multer from "multer";
+var upload = multer();
 
 const router = Router();
 //Login route

@@ -27,11 +27,11 @@ import {User} from "./User";
     
     @Column()
     @CreateDateColumn()
-    createdAt: Date;
+    create_aAt: Date;
   
     @Column()
     @UpdateDateColumn()
-    updatedAt: Date;
+    updated_at: Date;
 
   }
   
