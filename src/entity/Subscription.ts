@@ -36,7 +36,7 @@ import {
     @CreateDateColumn()
     created_at: Date;
   
-    @Column()
+    @Column({default:null})
     expires_at: Date;
     
   }

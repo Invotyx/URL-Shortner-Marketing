@@ -32,4 +32,7 @@ router.post("/", [checkJwt,upload.single('attachment')] , AdvertisementControlle
 router.put("/:id", [checkJwt,upload.single('attachment')] , AdvertisementController.update);
 router.delete("/:id", [checkJwt, upload.none()] , AdvertisementController.remove);
 
+//public
+router.get("/view/:id", [upload.none()] , AdvertisementController.view);
+
 export default router;

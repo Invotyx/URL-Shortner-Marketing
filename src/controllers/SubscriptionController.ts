@@ -10,12 +10,16 @@ export const get = async (req: Request, res: Response) => {
     const subscriptionRepository = getRepository(Subscription);
     const user = req['user'];
     let subscription = await subscriptionRepository.findOne({
-        where:{
-            user: user,
-            expires_at:MoreThan(new Date())
-        },
+        where:[
+            {
+                user: user,
+                expires_at:MoreThan(new Date())
+            },
+            {expires_at:null}
+        ],
         relations:['plan']
     });
+    
     return res.status(200).json({
         success: true,
         message: "",
@@ -64,10 +68,13 @@ export const create = async (req: Request, res: Response) => {
             }
             //CHECK IF SUBSCRIPTION WITH OTHER PLANS EXIST
             let previous_subscription = await subscriptionRepository.findOne({
-                where:{
-                    user: user,
-                    expires_at:MoreThan(new Date())
-                },
+                where:[
+                    {
+                        user: user,
+                        expires_at:MoreThan(new Date())
+                    },
+                    {expires_at:null}
+                ],
                 relations:['plan']
             });
             // IF EXISTS EXPIRE IT AND Create New one

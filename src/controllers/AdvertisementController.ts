@@ -51,7 +51,7 @@ export const create = async (req: Request , res: Response) => {
         .json({ success: false, message: error.details[0].message, data: [] });
     
     const advertisementRepository = getRepository(Advertisement);
-    const {title, description, attachment, link, display} = req.body;
+    const {title, description, link, display} = req.body;
     try{
     // CREATE AD
 
@@ -62,7 +62,6 @@ export const create = async (req: Request , res: Response) => {
         advertisement.link = link;
         advertisement.display = display;
         advertisement.user = user
-
 
         await advertisementRepository.save(advertisement);
         return res.status(200).send({
@@ -86,7 +85,6 @@ export const update = async (req: Request, res: Response) => {
     const user = req['user']; 
     const id = req.params.id; 
     const _file = ((req as MulterRequest).file);
-    console.log(_file);
     const ad_exists = await getRepository(Advertisement).findOne({
         where:{
             id: id,
@@ -106,9 +104,8 @@ export const update = async (req: Request, res: Response) => {
     if (error)
         return res
         .status(400)
-        .json({ success: false, message: error.details[0].message, data: [] });
+        .json({ success: false, message: error.details[0].message, data: {} });
     
-    // const {title, description, attachment, link, display} = req.body;
     const title = req.body.title || ad_exists.title;
     const description = req.body.description || ad_exists.description;
     const link = req.body.link || ad_exists.link;
@@ -117,7 +114,7 @@ export const update = async (req: Request, res: Response) => {
     const is_default = req.body.is_default || ad_exists.is_default;
 
     try{
-    // CREATE AD
+    // Update AD
         const advertisement = await getRepository(Advertisement)
         .createQueryBuilder()
         .update(Advertisement)
@@ -176,6 +173,7 @@ export const get = async(req: Request, res: Response) => {
 
 export const getUserAds = async(req: Request, res: Response) => {
     const user = req['user'];
+    // GET USER'S CURRENT SUBSCRIPTION PLAN  
     const currentSubscriptionPlan = await user.getCurrentSubscriptionPlan();
     if(!currentSubscriptionPlan){
         return res.status(400).json({
@@ -184,6 +182,7 @@ export const getUserAds = async(req: Request, res: Response) => {
             data:{}
         });
     }
+    // GET ADS OF CURRENT SUBSCRIPTION PLAN
     const currentSubscriptionAds = await user.getCurrentSubscriptionAds(
         currentSubscriptionPlan.created_at,
         currentSubscriptionPlan.expires_at
@@ -255,6 +254,41 @@ export const remove = async (req: Request, res: Response) => {
     }
 }
 
+export const view = async(req: Request, res: Response) => {
+    const id = req.params.id
+    
+    const advertisementRepository = getRepository(Advertisement);
+    const advertisement = await advertisementRepository.findOne({
+        where:{
+            id,
+            deleted_at:null
+        },
+    });
+    if(!advertisement){
+        return res.status(500).json({
+            success: false,
+            message: "Advertisement with this id not found!",
+            data: {},
+        });
+    }else{
+        try{
+            advertisement.views++;            
+            const result = await advertisementRepository.save(advertisement);
+            return res.status(200).send({
+                success:true,
+                message:'',
+                data:{advertisement:result}
+            })
+        }catch(error){
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!",
+                data: {error},
+            });
+        }
+    }
+}
+
 const validateAdvertisement = (advertisement) => {
     const schema = Joi.object({
       title: Joi.string().min(5).required(),
@@ -269,7 +303,6 @@ const validateUpdateAdvertisement = (advertisement) => {
     const schema = Joi.object({
       title: Joi.string().min(5),
       description: Joi.string().min(10),
-    //   attachment: Joi.string().uri(),
       link: Joi.string().uri(),
       is_default: Joi.valid('0','1'),
       display: Joi.string().valid('title', 'image', 'both'),

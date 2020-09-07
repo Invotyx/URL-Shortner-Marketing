@@ -34,6 +34,15 @@ import {
     @Column({default: 0})
     views: number;
 
+    @Column()
+    meta_title: string;
+
+    @Column('text')
+    meta_description: string;
+
+    @Column()
+    meta_image: string;
+
     @ManyToOne(type => User)
     @JoinColumn()
     user: User;
