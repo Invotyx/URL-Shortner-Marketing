@@ -34,15 +34,29 @@ export const create = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: error.details[0].message, data: [] });
     
-    const {plan_id, expires_at, payment_method} = req.body;
+    const { expires_at, payment_method, product_id} = req.body;
     const user = req['user'];
     const planRepository = getRepository(Plan);
     //CHECK IF PLAN ID VLAID
-    const plan = await planRepository.findOne(plan_id);
+    if(payment_method == 'apple'){
+        var plan = await planRepository.findOne({
+            where:{
+                // id:plan_id,
+                apple_product_id: product_id
+            }
+        });
+    }else if(payment_method == 'google'){
+        var plan = await planRepository.findOne({
+            where:{
+                // id:plan_id,
+                google_product_id: product_id
+            }
+        });
+    }
     if(!plan){
         return res
         .status(400)
-        .json({ success: false, message: 'Plan is invalid', data: [] });
+        .json({ success: false, message: 'Product id is invalid', data: [] });
     }else{
         const subscriptionRepository = getRepository(Subscription);
         try{
@@ -109,7 +123,7 @@ export const create = async (req: Request, res: Response) => {
 const validateSubscription = (subscription) => {
     const schema = Joi.object({
       payment_method: Joi.string().valid('apple', 'google'),
-      plan_id: Joi.required(),
+      product_id: Joi.required(),
       expires_at: Joi.date().required()
     });
     return schema.validate(subscription);

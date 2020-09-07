@@ -14,21 +14,21 @@ export class CreatePlans1599108401855 implements MigrationInterface {
             await planRepository.save(plan1);
 
             let plan2 = new Plan();
-            plan2.apple_product_id = "2-apple-asfasdfasd";
+            plan2.apple_product_id = "com.shurly.app.business";
             plan2.google_product_id = "2-google-asdfasdfasdf";
             plan2.title = "Business";
             plan2.slug = "enterprise";
             plan2.limit = 1;
-            plan2.rate = 3.97;
+            plan2.rate = 3.99;
             await planRepository.save(plan2);
 
             let plan3 = new Plan();
-            plan3.apple_product_id = "3-apple-asfasdfasd";
+            plan3.apple_product_id = "com.shurly.app.Agency";
             plan3.google_product_id = "3-google-asdfasdfasdf";
             plan3.title = "Agency";
             plan3.slug = "agency";
             plan3.limit = 10;
-            plan3.rate = 7.97;
+            plan3.rate = 7.99;
             await planRepository.save(plan3);
             
     }
