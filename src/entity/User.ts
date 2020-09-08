@@ -86,35 +86,46 @@ export class User {
         },
         relations:['plan']
       })
-      return subscription;
+      return subscription
     }
     return subscription;
   }
 
   async getCurrentSubscriptionAds(created_at, expires_at){
     if(expires_at === null){
-      const advertisemnts = await getRepository(Advertisement).find({
+      const advertisements = await getRepository(Advertisement).find({
         // created_at: Between(created_at, expires_at),
         deleted_at:null
       });
-      return advertisemnts;
+      return advertisements;
     }
-    const advertisemnts = await getRepository(Advertisement).find({
+    const advertisements = await getRepository(Advertisement).find({
       created_at: Between(created_at, expires_at),
       deleted_at:null
     });
-    return advertisemnts;
+    return advertisements;
   }
 
   async checkIfAddIsInCurrentSubscriptionPlan(advertisemnt_id){
     const currentSubscriptionPlan = await this.getCurrentSubscriptionPlan();
-    if(!currentSubscriptionPlan){
-      return false;
+    console.log(currentSubscriptionPlan);
+    if(currentSubscriptionPlan.expires_at == null){
+      const advertisemnt = await getRepository(Advertisement).findOne({
+        where:{
+          id:advertisemnt_id,
+          deleted_at:null
+        }
+        // created_at: MoreThan(currentSubscriptionPlan.created_at),
+      });  
+      return advertisemnt;
     }
     const advertisemnt = await getRepository(Advertisement).findOne({
-      id:advertisemnt_id,
-      created_at: Between(currentSubscriptionPlan.created_at, currentSubscriptionPlan.expires_at),
-      deleted_at:null
+      where:{
+        id:advertisemnt_id,
+        created_at: Between(currentSubscriptionPlan.created_at, currentSubscriptionPlan.expires_at),
+        deleted_at:null
+
+      }
     });
     return advertisemnt;
   }

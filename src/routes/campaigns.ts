@@ -15,5 +15,6 @@ router.put("/:id", [checkJwt,upload.single('attachment')] , CampaignController.u
 router.delete("/:id", [checkJwt, upload.none()] , CampaignController.remove);
 
 // Public apis
+router.get("/view/get-all", [upload.none()] , CampaignController.getAllCampaigns);
 router.get("/view/:id", [upload.none()] , CampaignController.view);
 export default router;

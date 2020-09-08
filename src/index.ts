@@ -18,6 +18,8 @@ createConnection()
 
     // Call midlewares
     app.use(cors());
+    app.use('/',express.static('client/build'))
+    app.use('/:id',express.static('client/build'))
     app.use('/uploads/',express.static('uploads'))
     app.use(helmet());
     app.use(bodyParser.urlencoded({extended: true}))

@@ -17,18 +17,19 @@ export const create = async (req: Request , res: Response) => {
                     message: error.details[0].message, 
                     data:{}
                 })
-    
-    const advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
-        req.body.advertisement_id,
-    )
-    if(!advertisement) 
-        return res.status(400)
-                .json({
-                    success: false, 
-                    message: 'Advertisement not found in your current subscription plan', 
-                    data:{}
-                })
-    const url = 'https://www.dawn.com/news/1577184/residents-protest-after-karachis-dha-and-clifton-remain-waterlogged-powerless-5-days-after-record-breaking-monsoon-spell';
+    if(req.body.advertisement_id){
+        var advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
+            req.body.advertisement_id,
+        )
+        if(!advertisement) 
+            return res.status(400)
+                    .json({
+                        success: false, 
+                        message: 'Advertisement not found in your current subscription plan', 
+                        data:{}
+                    })
+    }
+    const url = req.body.destination_url;
     const metaData = await urlMetadata(url);
     if(metaData){
         const {title, destination_url} = req.body;
@@ -42,7 +43,9 @@ export const create = async (req: Request , res: Response) => {
             campaign.meta_image = metaData.image;
             campaign.internal_url = randomize('Aa0',6);
             campaign.destination_url = destination_url;
-            campaign.advertisement = advertisement;
+            if(req.body.advertisement_id){
+                campaign.advertisement = advertisement ;
+            }
             campaign.user = user
 
             await getRepository(Campaign).save(campaign);
@@ -58,6 +61,12 @@ export const create = async (req: Request , res: Response) => {
                 data: {error},
             });
         }
+    }else{
+        return res.status(400).json({
+            success: false,
+            message: "Destination Url is invalid!",
+            data: {error},
+        });
     }
    
 }
@@ -88,7 +97,7 @@ export const update = async (req: Request, res: Response) => {
         .json({ success: false, message: error.details[0].message, data: {} });
     if(req.body.advertisement_id){
         
-        const advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
+        var advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
             req.body.advertisement_id,
         )
         if(!advertisement) 
@@ -105,6 +114,7 @@ export const update = async (req: Request, res: Response) => {
     }
     try{
         campaignRepository.merge(campaign, {...req.body,
+                advertisement:advertisement,
                 meta_description:metaData.description,
                 meta_title:metaData.title,
                 meta_image:metaData.image
@@ -169,7 +179,7 @@ export const getUserCampaigns = async(req: Request, res: Response) => {
             data: {},
         });
     }else{
-        return res.status(500).json({
+        return res.status(200).json({
             success: true,
             message: "",
             data: {campaigns}
@@ -229,13 +239,13 @@ export const remove = async (req: Request, res: Response) => {
 }
 
 export const view = async(req: Request, res: Response) => {
-    const id = req.params.id
+    const internal_url = req.params.id
     const user = req['user'];
     
     const campaignRepository = getRepository(Campaign);
     const campaign = await campaignRepository.findOne({
         where:{
-            id,
+            internal_url,
             deleted_at:null
         },
         relations:['advertisement']
@@ -265,12 +275,34 @@ export const view = async(req: Request, res: Response) => {
     }
 }
 
+export const getAllCampaigns = async(req: Request, res: Response) => {
+    const campaignRepository = getRepository(Campaign);
+    const campaigns = await campaignRepository.find({
+        where:{
+            deleted_at:null
+        }
+    });
+    if(!campaigns){
+        return res.status(400).json({
+            success: false,
+            message: "Campaigns not found!",
+            data: {},
+        });
+    }else{
+        return res.status(200).json({
+            success: true,
+            message: "",
+            data: {campaigns}
+        })
+    }    
+}
+
 
 const validateCampaign = (campaign) => {
     const schema = Joi.object({
       title: Joi.string().min(5).required(),
       destination_url: Joi.string().uri().required(),
-      advertisement_id: Joi.number().required(),
+      advertisement_id: Joi.number(),
     });
     return schema.validate(campaign);
 }
