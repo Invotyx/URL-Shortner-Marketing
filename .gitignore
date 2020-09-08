@@ -1,6 +1,7 @@
 .idea/
 .vscode/
 node_modules/
+uploads/advertisement/
 build/
 tmp/
 temp/
