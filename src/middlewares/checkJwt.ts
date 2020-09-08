@@ -37,6 +37,11 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     req['userId'] = decoded.userId;
     const userRepository = getRepository(User);
     const user = await userRepository.findOne(decoded.userId,{select: ["id", "email", "first_name","last_name","phone_number","profile_image"]});
+    if(!user){
+      return res.status(401).send({
+        message: "Unauthorized!",
+      });
+    }
     req['user'] = user;
     next();
   });

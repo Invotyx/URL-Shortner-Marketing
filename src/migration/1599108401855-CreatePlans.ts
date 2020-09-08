@@ -18,7 +18,7 @@ export class CreatePlans1599108401855 implements MigrationInterface {
             plan2.google_product_id = "2-google-asdfasdfasdf";
             plan2.title = "Business";
             plan2.slug = "enterprise";
-            plan2.limit = 1;
+            plan2.limit = 3;
             plan2.rate = 3.99;
             await planRepository.save(plan2);
 
