@@ -15,16 +15,16 @@ export class UserDevice {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne((type) => User)
+  @JoinColumn({ name: "user_id" })
+  user: User;
+
   @Column({ length: 60 })
   device_name: string;
 
   @Column()
   device_id: string;
-
-  @ManyToOne((type) => User)
-  @JoinColumn()
-  user: User;
-
+  
   @Column()
   @CreateDateColumn()
   created_at: Date;

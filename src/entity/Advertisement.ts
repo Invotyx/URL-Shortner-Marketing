@@ -5,6 +5,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
+    JoinColumn
   } from "typeorm";
 import { DeleteDateColumn } from 'typeorm-plus'
 import {User} from './User';
@@ -20,7 +21,14 @@ import {User} from './User';
   export class Advertisement {
     @PrimaryGeneratedColumn()
     id: number;
-  
+
+    @ManyToOne(type => User)
+    @JoinColumn({name:'user_id'})
+    user: User;
+    
+    @Column()
+    user_id: number
+
     @Column()
     title: string;
 
@@ -41,9 +49,6 @@ import {User} from './User';
 
     @Column({default: 0})
     is_default: boolean;
-
-    @ManyToOne(type => User)
-    user: User;
 
     @Column()
     @CreateDateColumn()

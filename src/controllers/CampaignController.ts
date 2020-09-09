@@ -4,7 +4,7 @@ import * as Joi from 'joi';
 const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
 import { Campaign } from '../entity/Campaign';
-import { Advertisement } from '../entity/Advertisement';
+// import { Advertisement } from '../entity/Advertisement';
 
 export const create = async (req: Request, res: Response) => {
   const user = req['user'];
@@ -27,8 +27,16 @@ export const create = async (req: Request, res: Response) => {
       });
   }
   const url = req.body.destination_url;
-  const metaData = await urlMetadata(url);
-  if (metaData) {
+  try{
+      var metaData = await urlMetadata(url);
+  }catch(ex){
+    res.status(500).json({
+        success: false,
+      message: 'Destination Url is invalid!',
+      data: { error },
+    })
+  }
+  
     const { title, destination_url } = req.body;
     try {
       // CREATE Campaign
@@ -38,7 +46,7 @@ export const create = async (req: Request, res: Response) => {
       campaign.meta_title = metaData.title;
       campaign.meta_description = metaData.description;
       campaign.meta_image = metaData.image;
-      campaign.internal_url = randomize('Aa0', 6);
+      campaign.internal_url = await campaign.getInternalID();
       campaign.destination_url = destination_url;
       if (req.body.advertisement_id) {
         campaign.advertisement = advertisement;
@@ -58,13 +66,7 @@ export const create = async (req: Request, res: Response) => {
         data: { error },
       });
     }
-  } else {
-    return res.status(400).json({
-      success: false,
-      message: 'Destination Url is invalid!',
-      data: { error },
-    });
-  }
+  
 };
 
 export const update = async (req: Request, res: Response) => {

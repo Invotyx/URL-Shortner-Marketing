@@ -17,16 +17,16 @@ import {User} from "./User";
     @PrimaryGeneratedColumn()
     id: number;
 
+    @ManyToOne(type => User)
+    @JoinColumn({ name: "user_id" })
+    user: User;
+
     @Column({length: 30})
     provider: string;
   
     @Column()
     social_id: string;
-        
-    @ManyToOne(type => User)
-    @JoinColumn()
-    user: User;
-    
+            
     @Column()
     @CreateDateColumn()
     created_at: Date;

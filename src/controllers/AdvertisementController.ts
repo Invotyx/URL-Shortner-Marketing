@@ -292,7 +292,7 @@ export const view = async(req: Request, res: Response) => {
 const validateAdvertisement = (advertisement) => {
     const schema = Joi.object({
       title: Joi.string().min(5).required(),
-      description: Joi.string(),
+      description: Joi.string().min(10),
       link: Joi.string().uri().required(),
       display: Joi.string().valid('title', 'image', 'both').required(),
     });

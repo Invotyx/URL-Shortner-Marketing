@@ -72,6 +72,7 @@ export const create = async (req: Request, res: Response) => {
             // IF EXISTS UPDATE SUBSCRIPTION EXPIRY DATE
             if(existing_subscription){
                 existing_subscription.payment_method = payment_method;
+                existing_subscription.created_at = new Date();
                 existing_subscription.expires_at = expires_at;
                 subscriptionRepository.save(existing_subscription);
                 return res.status(200).json({

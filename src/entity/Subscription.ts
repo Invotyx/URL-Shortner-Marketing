@@ -20,17 +20,17 @@ import {
   export class Subscription {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column({type:'enum', enum:PaymentMethods })
-    payment_method:PaymentMethods
-
+    
     @ManyToOne(type => User)
-    @JoinColumn()
+    @JoinColumn({ name: "user_id" })
     user: User;
 
     @ManyToOne(type => Plan)
-    @JoinColumn()
+    @JoinColumn({ name: "plan_id" })
     plan: Plan;
+
+    @Column({type:'enum', enum:PaymentMethods })
+    payment_method:PaymentMethods
 
     @Column()
     @CreateDateColumn()

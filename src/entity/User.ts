@@ -108,7 +108,6 @@ export class User {
 
   async checkIfAddIsInCurrentSubscriptionPlan(advertisemnt_id){
     const currentSubscriptionPlan = await this.getCurrentSubscriptionPlan();
-    console.log(currentSubscriptionPlan);
     if(currentSubscriptionPlan.expires_at == null){
       const advertisemnt = await getRepository(Advertisement).findOne({
         where:{
@@ -139,7 +138,5 @@ export class User {
             subscription.payment_method = payment_method;
       return await getRepository(Subscription).save(subscription);
   }
-  // checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-  //   return bcrypt.compareSync(unencryptedPassword, this.password);
-  // }
+
 }
