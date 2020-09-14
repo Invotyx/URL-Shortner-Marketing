@@ -32,6 +32,8 @@ services:
     networks:
       - shurly_app
     restart: always
+    volumes:
+      - ~/uploads/advertisement:/usr/src/app/uploads/advertisement
     environment:
       - TYPEORM_CONNECTION=mysql
       - TYPEORM_HOST=mysql
