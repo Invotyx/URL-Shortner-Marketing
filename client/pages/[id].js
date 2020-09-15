@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
-import Advertisement from './Advertisement';
-import Head from 'next/head';
-import { API_ADDR } from '../config/constans';
+import Advertisement from "./Advertisement";
+import Head from "next/head";
+import { API_ADDR } from "../config/constans";
 export default function Campaign() {
   const router = useRouter();
 
@@ -29,7 +29,7 @@ export default function Campaign() {
           (error) => {
             setIsLoaded(true);
             setError(error);
-          },
+          }
         );
     }
     return () => {
@@ -48,31 +48,25 @@ export default function Campaign() {
       <div className="row justify-content-around">
         <Head>
           <title>{item.meta_title}</title>
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"
+          />
           <link rel="icon" href={item.meta_image} />
           <meta name="description" content={item.meta_description} />
           <meta property="og:image" content={item.meta_image}></meta>
           <meta property="facebook:image" content={item.meta_image}></meta>
         </Head>
-        <div className="col-md-6">
-          <h4>Campaign</h4>
-          <div className="card">
-            <div className="card-header">
-              <img
-                className="card-img-top"
-                src={item.meta_image}
-                alt="Card image cap"
-              />
-            </div>
-            <div className="card-body">
-              <h5 className="card-title">{item.meta_title}</h5>
-              <p className="card-text">{item.meta_description}</p>
-              <a href={item.destination_url} className="btn btn-primary">
-                Go To Link
-              </a>
-            </div>
-          </div>
+        <div className="col-md-8">
+          {item.advertisement && (
+            <Advertisement
+              destination_url={item.destination_url}
+              id={item.advertisement.id}
+            />
+          )}
         </div>
-        {item.advertisement && <Advertisement id={item.advertisement.id} />}
       </div>
     );
   }
