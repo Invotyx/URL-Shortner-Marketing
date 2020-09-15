@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { getRepository, MoreThan } from 'typeorm';
+import { getRepository, Between } from 'typeorm';
 import * as Joi from 'joi';
 const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
 import { Campaign } from '../entity/Campaign';
+import { CampaignView } from '../entity/CampaignView';
 // import { Advertisement } from '../entity/Advertisement';
 
 export const create = async (req: Request, res: Response) => {
@@ -255,6 +256,12 @@ export const view = async (req: Request, res: Response) => {
     try {
       campaign.views++;
       const result = await campaignRepository.save(campaign);
+      const campaign_view = new CampaignView();
+      if(campaign.advertisement){
+        campaign_view.advertisement = campaign.advertisement;
+      }
+      campaign_view.campaign = campaign;
+      await getRepository(CampaignView).save(campaign_view);
       return res.status(200).send({
         success: true,
         message: '',
@@ -291,6 +298,42 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
     });
   }
 };
+export const getStatistics = async(req: Request, res: Response) => {
+  const { error } = validateStatsRequest(req.body);
+  
+  if (error)
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+      data: {},
+    });
+    try{
+      const campaign = await getRepository(Campaign).findOne(req.params.id);
+      if(!campaign) return res.status(400).json({
+        success: false,
+        message: 'Campign with this id not found',
+        data: {},
+        });
+      const campaigns = await getRepository(CampaignView).find({
+        where:{
+          campaign: campaign,
+          created_at: Between(req.body.starts_at, req.body.ends_at),
+        },
+      });
+      return res.status(200).json({
+        success:true,
+        message: "",
+        data: {campaigns}
+      })
+    }catch(error){
+      res.status(500).json({
+        success:false,
+        message: "Something went wrong",
+        data: {error}
+      })
+    }
+  
+} 
 
 const validateCampaign = (campaign) => {
   const schema = Joi.object({
@@ -309,3 +352,11 @@ const validateUpdateCampaign = (campaign) => {
   });
   return schema.validate(campaign);
 };
+
+const validateStatsRequest = (campaign) => {
+  const schema = Joi.object({
+    starts_at: Joi.date().required(),
+    ends_at: Joi.date().required(),
+  });
+  return schema.validate(campaign);
+}
