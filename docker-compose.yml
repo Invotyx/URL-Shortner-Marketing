@@ -59,6 +59,7 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ~/uploads/advertisement:/var/www/html/uploads/advertisement
     ports:
       - '80:80'
       - '443:443'
