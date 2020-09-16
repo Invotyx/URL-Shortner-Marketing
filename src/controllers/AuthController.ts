@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
+import { UserDevice } from "../entity/UserDevice";
 import { SocialLogin } from "../entity/SocialLogin";
 import * as Joi from "joi";
 import config from "../config/config";
@@ -90,7 +91,47 @@ export const login = async (req: Request, res: Response) => {
   }
 }
 
-
+export const logout = async (req:Request, res:Response) => {
+  const user = req['user'];
+  if(!req.body.device_id) 
+    return res
+      .status(400)
+      .json({
+        success:false,
+        message:'Device id is required',
+        data:{body:req.body}
+      })
+    const {device_id, device_name} = req.body;
+    const user_device = await getRepository(UserDevice).findOne({
+        where:{
+            device_id:device_id,
+            user:user
+        }
+    })
+    if(!user_device){
+      return res.status(400).json({
+        success:false,
+        message:'User Device not found',
+        data:{}
+      })
+    }else{
+      try{
+        const result = await getRepository(UserDevice).delete({ user: user, device_id:device_id });
+        return res.status(200).json({
+          success:true,
+          message:'',
+          data:{result}
+        })
+      }catch(error){
+        return res.status(500).json({
+          success:false,
+          message:'Something went wrong',
+          data:{error}
+        })
+      }
+    }
+  
+} 
 //Validate user 
 const validateUser = (user) => {
   const schema = Joi.object({
