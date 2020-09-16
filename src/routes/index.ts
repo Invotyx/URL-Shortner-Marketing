@@ -3,6 +3,7 @@ import auth from "./auth";
 import subscription from "./subscription";
 import advertisement from "./advertisement";
 import campaigns from "./campaigns";
+import device from "./device";
 import * as multer from "multer";
 var upload = multer();
 
@@ -12,5 +13,6 @@ routes.use("/auth",[upload.none()], auth);
 routes.use("/subscription",[upload.none()], subscription);
 routes.use("/advertisement", advertisement);
 routes.use("/campaign", campaigns);
+routes.use("/device", device);
 
 export default routes;

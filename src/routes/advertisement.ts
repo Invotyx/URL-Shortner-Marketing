@@ -29,7 +29,7 @@ var fileFilter = (req, file, callback) => {
     callback(null, true)
 }
 var limits = {
-    fileSize: 1024 * 1024
+    fileSize: 1024 * 1024 * 10
 }
 var storage = multerS3({
     s3: s3,
