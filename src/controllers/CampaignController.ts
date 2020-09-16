@@ -300,7 +300,7 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
   }
 };
 export const getStatistics = async(req: Request, res: Response) => {
-  const { error } = validateStatsRequest(req.body);
+  const { error } = validateStatsRequest(req.query);
   
   if (error)
     return res.status(400).json({
