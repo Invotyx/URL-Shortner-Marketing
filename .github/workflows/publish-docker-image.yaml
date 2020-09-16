@@ -20,3 +20,12 @@ jobs:
           repository: invotyx/shurly_app/api_shurly_app
           tags: latest
           path: .
+      - name: Push frontend to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: invotyx/shurly_app/shurly_app
+          tags: latest
+          path: ./client

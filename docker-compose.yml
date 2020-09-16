@@ -48,6 +48,15 @@ services:
       - TYPEORM_MIGRATIONS=build/migration/**/*.js
       - PORT=3000
 
+  shurly_app:
+    image: 'docker.pkg.github.com/invotyx/shurly_app/shurly_app:latest'
+    container_name: shurly_app
+    depends_on:
+      - shurly_api
+    networks:
+      - shurly_app
+    restart: always
+
   nginx:
     image: nginx:latest
     container_name: nginx
