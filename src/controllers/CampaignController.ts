@@ -168,6 +168,7 @@ export const getUserCampaigns = async (req: Request, res: Response) => {
       user: user,
       deleted_at: null,
     },
+    relations:['advertisement']
   });
   if (!campaigns) {
     return res.status(500).json({

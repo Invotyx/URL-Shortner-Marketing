@@ -35,12 +35,12 @@ export const login = async (req: Request, res: Response) => {
     });
     if(social_login){
       const user = await userRepository.findOne(social_login.user.id,{select: ["id", "email", "first_name","last_name","phone_number","profile_image"]});
-
+      const plan = await user.getCurrentSubscriptionPlan();
       const token = user.generateToken();
       return res.status(200).json({
         success: true,
         message: "",
-        data: { token, user },
+        data: { token, user, subscription:plan },
       });
     }else{
     //  CREATE NEW USER
@@ -63,7 +63,7 @@ export const login = async (req: Request, res: Response) => {
 
       // ASSIGN FREE SUBSCRIPTION PLAN
       const plan = await user.addFreePlan(req.body.payment_method)
-      console.log(plan);
+      const subscriptionPlan = await user.getCurrentSubscriptionPlan()
       const token = user.generateToken();
       return res.status(200).json({
         success: true,
@@ -77,7 +77,8 @@ export const login = async (req: Request, res: Response) => {
             "last_name":user.last_name,
             "phone_number":user.phone_number,
             "profile_image":user.profile_image
-          }
+          },
+          subscription:subscriptionPlan
         },
       });
     }

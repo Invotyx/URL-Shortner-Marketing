@@ -7,8 +7,7 @@ import {
   UpdateDateColumn,
   getRepository,
   MoreThan,
-  Connection,
-  Between
+  Between, MoreThanOrEqual
 } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
@@ -94,7 +93,7 @@ export class User {
   async getCurrentSubscriptionAds(created_at, expires_at){
     if(expires_at === null){
       const advertisements = await getRepository(Advertisement).find({
-        // created_at: Between(created_at, expires_at),
+        created_at: MoreThanOrEqual(created_at),
         deleted_at:null
       });
       return advertisements;

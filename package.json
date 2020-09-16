@@ -34,7 +34,9 @@
     "ts-node-dev": "^1.0.0-pre.62",
     "typeorm": "0.2.25",
     "typeorm-plus": "^0.1.2",
-    "url-metadata": "^2.4.1"
+    "url-metadata": "^2.4.1",
+    "aws-sdk": "^2.752.0",
+    "multer-s3": "^2.9.0"
   },
   "scripts": {
     "tsc": "tsc",

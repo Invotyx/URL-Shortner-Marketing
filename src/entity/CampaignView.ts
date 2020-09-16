@@ -18,11 +18,11 @@ import {
     
     
     @ManyToOne(() => Campaign)
-    @JoinColumn()
+    @JoinColumn({name:'campaign_id'})
     campaign: Campaign
 
     @ManyToOne(() => Advertisement)
-    @JoinColumn()
+    @JoinColumn({name:'advertisement_id'})
     advertisement: Advertisement
 
     @Column()

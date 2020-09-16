@@ -129,8 +129,8 @@ export const update = async (req: Request, res: Response) => {
                 data:{}
             })
         }else{
-            return res.status(200).send({
-                success:true,
+            return res.status(400).send({
+                success:false,
                 message:'You are not allowed to update this advertisement',
                 data:{}
             })
@@ -156,13 +156,13 @@ export const get = async(req: Request, res: Response) => {
         }
     });
     if(!advertisement){
-        return res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: "Advertisement with this id not found!",
             data: {},
         });
     }else{
-        return res.status(500).json({
+        return res.status(200).json({
             success: true,
             message: "",
             data: {advertisement}
@@ -188,13 +188,13 @@ export const getUserAds = async(req: Request, res: Response) => {
         currentSubscriptionPlan.expires_at
     );
     if(currentSubscriptionAds.length > 0){
-        return res.status(500).json({
+        return res.status(200).json({
             success: true,
             message: "",
             data: {advertisements:currentSubscriptionAds},
         });
     }else{
-        return res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: "No Ad found in current Subscription Plan",
             data: {}
@@ -239,8 +239,8 @@ export const remove = async (req: Request, res: Response) => {
                 data:{}
             })
         }else{
-            return res.status(200).send({
-                success:true,
+            return res.status(400).send({
+                success:false,
                 message:'You are not allowed to delete this advertisement',
                 data:{}
             })
@@ -265,7 +265,7 @@ export const view = async(req: Request, res: Response) => {
         },
     });
     if(!advertisement){
-        return res.status(500).json({
+        return res.status(400).json({
             success: false,
             message: "Advertisement with this id not found!",
             data: {},
