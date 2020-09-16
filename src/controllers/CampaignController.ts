@@ -318,7 +318,7 @@ export const getStatistics = async(req: Request, res: Response) => {
       const campaigns = await getRepository(CampaignView).find({
         where:{
           campaign: campaign,
-          created_at: Between(req.body.starts_at, req.body.ends_at),
+          created_at: Between(req.query.starts_at, req.query.ends_at),
         },
       });
       return res.status(200).json({
