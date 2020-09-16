@@ -3,7 +3,23 @@ import * as AdvertisementController from "../controllers/AdvertisementController
 import { checkJwt } from "../middlewares/checkJwt";
 import * as multer from "multer";
 import * as path from 'path';
+import config from "../config/config";
+// import { access } from "fs";
+var randomize = require('randomatic');
+
 var upload = multer();
+
+
+const aws = require('aws-sdk');
+aws.config.update({
+  accessKeyId:config.accessKeyId ,
+  secretAccessKey:config.secretAccessKey ,
+  region: config.region
+});
+
+const s3 = new aws.S3();
+
+const multerS3 = require('multer-s3');
 
 var fileFilter = (req, file, callback) => {
     var ext = path.extname(file.originalname);
@@ -15,12 +31,18 @@ var fileFilter = (req, file, callback) => {
 var limits = {
     fileSize: 1024 * 1024
 }
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads/'+'advertisement'+'/')
+var storage = multerS3({
+    s3: s3,
+    bucket: 'shurly.app',
+    acl: 'public-read',
+    cacheControl: 'max-age=31536000',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: file.fieldname});
     },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + file.originalname);
+    key: function (req, file, cb) {
+      const key = `advertisement/${req['userId']+'_'+Date.now()+'_'+randomize('Aa0', 6)+path.extname(file.originalname)}`
+      cb(null, key);
     }
 })
 var upload = multer({storage:storage, fileFilter:fileFilter, limits:limits});

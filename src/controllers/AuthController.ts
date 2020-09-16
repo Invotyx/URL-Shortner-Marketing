@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
 import { SocialLogin } from "../entity/SocialLogin";
-import { Subscription } from "../entity/Subscription";
 import * as Joi from "joi";
 import config from "../config/config";
 

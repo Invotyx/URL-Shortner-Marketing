@@ -58,7 +58,7 @@ export const create = async (req: Request , res: Response) => {
         let advertisement = new Advertisement();
         advertisement.title = title;
         advertisement.description = description;
-        advertisement.attachment = _file.path;
+        advertisement.attachment = _file.location;
         advertisement.link = link;
         advertisement.display = display;
         advertisement.user = user
@@ -109,7 +109,7 @@ export const update = async (req: Request, res: Response) => {
     const title = req.body.title || ad_exists.title;
     const description = req.body.description || ad_exists.description;
     const link = req.body.link || ad_exists.link;
-    const attachment = _file.path || ad_exists.attachment;
+    const attachment = _file ? _file.location : ad_exists.attachment;
     const display = req.body.display || ad_exists.display;
     const is_default = req.body.is_default || ad_exists.is_default;
 
