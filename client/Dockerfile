@@ -14,4 +14,6 @@ RUN echo "export const APP_NAME = 'Shurly';" >> config/constans.js
 
 RUN yarn run build
 
+EXPOSE 3000
+
 CMD ["npm", "start"]
