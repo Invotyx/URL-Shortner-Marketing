@@ -55,6 +55,6 @@ router.put("/:id", [checkJwt,upload.single('attachment')] , AdvertisementControl
 router.delete("/:id", [checkJwt, upload.none()] , AdvertisementController.remove);
 
 //public
-router.get("/view/:id", [upload.none()] , AdvertisementController.view);
+router.get("/get-ad-content/:id", [upload.none()] , AdvertisementController.view);
 
 export default router;

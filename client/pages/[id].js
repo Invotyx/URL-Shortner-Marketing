@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import Advertisement from "./Advertisement";
+import NoAdvertisement from "./NoAdvertisement";
 import Head from "next/head";
+import Loader from "../components/Loader";
+import Error from "../components/Error";
 import { API_ADDR } from "../config/constans";
 export default function Campaign() {
   const router = useRouter();
@@ -17,9 +20,10 @@ export default function Campaign() {
         .then((res) => res.json())
         .then(
           (result) => {
-            // console.log(result);
             if (result.success) {
               setItem(result.data.campaign);
+            } else {
+              setError(result);
             }
             setIsLoaded(true);
           },
@@ -40,9 +44,9 @@ export default function Campaign() {
   }, [router.query]);
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <Error error={error.message}></Error>;
   } else if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <Loader />;
   } else {
     return (
       <div className="row justify-content-around">
@@ -58,13 +62,16 @@ export default function Campaign() {
           <meta name="description" content={item.meta_description} />
           <meta property="og:image" content={item.meta_image}></meta>
           <meta property="facebook:image" content={item.meta_image}></meta>
+          <meta property="image" content={item.meta_image}></meta>
         </Head>
         <div className="col-md-8">
-          {item.advertisement && (
+          {item.advertisement ? (
             <Advertisement
               destination_url={item.destination_url}
               id={item.advertisement.id}
             />
+          ) : (
+            <NoAdvertisement destination_url={item.destination_url} />
           )}
         </div>
       </div>

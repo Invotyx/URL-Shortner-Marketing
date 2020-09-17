@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { API_ADDR } from "../config/constans";
+import { APP_NAME } from "../config/constans";
+import Loader from "../components/Loader";
+import Error from "../components/Error";
 
 export default class Advertisement extends Component {
   constructor(props) {
@@ -12,16 +15,29 @@ export default class Advertisement extends Component {
     };
   }
   componentWillMount() {
-    fetch(`${API_ADDR}/advertisement/view/` + this.props.id)
+    if (this.props.advertisement == null) {
+      this.setState({
+        isLoaded: false,
+        error: null,
+        item: {},
+        plan: {},
+      });
+    }
+    fetch(`${API_ADDR}/advertisement/get-ad-content/` + this.props.id)
       .then((res) => res.json())
       .then(
         (result) => {
-          console.log(result);
-          this.setState({
-            isLoaded: true,
-            item: result.data.advertisement,
-            plan: result.data.subscription.plan,
-          });
+          if (result.success) {
+            this.setState({
+              isLoaded: true,
+              item: result.data.advertisement,
+              plan: result.data.subscription.plan,
+            });
+          } else {
+            this.setState({
+              error: result,
+            });
+          }
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -40,44 +56,48 @@ export default class Advertisement extends Component {
   render() {
     const { error, isLoaded, item, plan } = this.state;
     if (error) {
-      return <div>Error: {error.message}</div>;
+      return <Error error={error.message}></Error>;
     } else if (!isLoaded) {
-      return <div>Loading...</div>;
+      return <Loader />;
     } else {
       return (
         <div className="">
-          {/* <a href={item.link}> */}
-          <div class="card" style={{ width: "50rem" }}>
-            {item.display == "image" && (
-              <img
-                class="card-img-top"
-                src={`/${item.attachment}`}
-                alt="Card image cap"
-              />
-            )}
-            {item.display == "title" && (
-              <div class="card-body">
-                <h5 class="card-title">{item.title}</h5>
-                {/* <p class="card-text">{item.description}</p> */}
-              </div>
-            )}
-
-            {item.display == "both" && (
-              <div class="card-body">
-                <h5 class="card-title">{item.title}</h5>
+          <a
+            href={item.link}
+            target="blank"
+            style={{ textDecoration: "none", color: "black" }}
+          >
+            <div className="card" style={{ width: "50rem" }}>
+              {item.display == "image" && (
                 <img
-                  class="card-img-top"
+                  className="card-img-top"
                   src={`/${item.attachment}`}
                   alt="Card image cap"
                 />
-                {/* <p class="card-text">{item.description}</p> */}
-              </div>
-            )}
-            {plan.title == "Cause" && (
-              <div class="card-footer text-right">Powered By Sharely</div>
-            )}
-          </div>
-          {/* </a> */}
+              )}
+              {item.display == "title" && (
+                <div className="card-body">
+                  <h5 className="card-title text-center">{item.title}</h5>
+                </div>
+              )}
+
+              {item.display == "both" && (
+                <div className="card-body">
+                  <h5 className="card-title text-center">{item.title}</h5>
+                  <img
+                    className="card-img-top"
+                    src={`/${item.attachment}`}
+                    alt="Card image cap"
+                  />
+                </div>
+              )}
+              {plan.title == "Cause" && (
+                <div className="card-footer text-right">
+                  Powered By {APP_NAME}
+                </div>
+              )}
+            </div>
+          </a>
         </div>
       );
     }

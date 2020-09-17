@@ -3,7 +3,7 @@ import { getRepository, MoreThan } from "typeorm";
 import * as Joi from "joi";
 
 import { Advertisement } from "../entity/Advertisement";
-// import { Subscription } from "../entity/Subscription";
+import { User } from "../entity/User";
 
 interface MulterRequest extends Request {
     file: any;
@@ -111,8 +111,8 @@ export const update = async (req: Request, res: Response) => {
     const link = req.body.link || ad_exists.link;
     const attachment = _file ? _file.location : ad_exists.attachment;
     const display = req.body.display || ad_exists.display;
-    const is_default = req.body.is_default || ad_exists.is_default;
-
+    let is_default = req.body.is_default || ad_exists.is_default;
+    is_default = (is_default == '1' );
     try{
     // Update AD
         const advertisement = await getRepository(Advertisement)
@@ -272,12 +272,18 @@ export const view = async(req: Request, res: Response) => {
         });
     }else{
         try{
+            
             advertisement.views++;            
             const result = await advertisementRepository.save(advertisement);
+            const user = await getRepository(User).findOne({
+                where:{id:result.user_id}
+            })
+            const subscriptionPlan = await user.getCurrentSubscriptionPlan();
+            
             return res.status(200).send({
                 success:true,
                 message:'',
-                data:{advertisement:result}
+                data:{advertisement:result, subscription:subscriptionPlan}
             })
         }catch(error){
             return res.status(500).json({
