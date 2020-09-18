@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import Advertisement from "./Advertisement";
-import NoAdvertisement from "./NoAdvertisement";
+import Advertisement from "../components/Advertisement";
+import NoAdvertisement from "../components/NoAdvertisement";
 import Head from "next/head";
 import Loader from "../components/Loader";
 import AdFooter from "../components/AdFooter";
-import Error from "../components/Error";
+// import Error from "../components/Error";
+import Error from "next/error";
 import { API_ADDR } from "../config/constans";
 export default function Campaign() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function Campaign() {
   }, [router.query]);
 
   if (error) {
-    return <Error error={error.message}></Error>;
+    return <Error statusCode="404" error={error.message}></Error>;
   } else if (!isLoaded) {
     return <Loader />;
   } else {

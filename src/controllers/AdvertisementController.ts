@@ -29,12 +29,11 @@ export const create = async (req: Request , res: Response) => {
             data:{}
         });
     }
-    const currentSubscriptionAds = await user.getCurrentSubscriptionAds(
-        currentSubscriptionPlan.created_at,
-        currentSubscriptionPlan.expires_at
+    const total_user_ads = await user.getCurrentSubscriptionAds(
+        currentSubscriptionPlan
     );
     //CHECK IF ADS QUOTA IS OVER
-    if( currentSubscriptionPlan.plan.limit <= currentSubscriptionAds.length){
+    if( currentSubscriptionPlan.plan.limit <= total_user_ads.length){
         return res.status(400).json({
             success: false,
             message:"Your Subscription plan does not permit you to create more Ads. Kindly upgrade your Plan",
@@ -298,7 +297,7 @@ export const view = async(req: Request, res: Response) => {
 
 const validateAdvertisement = (advertisement) => {
     const schema = Joi.object({
-      title: Joi.string().min(5).required(),
+      title: Joi.string().min(3).required(),
       description: Joi.string().min(10),
       link: Joi.string().uri().required(),
       display: Joi.string().valid('title', 'image', 'both').required(),
@@ -308,7 +307,7 @@ const validateAdvertisement = (advertisement) => {
 
 const validateUpdateAdvertisement = (advertisement) => {
     const schema = Joi.object({
-      title: Joi.string().min(5),
+      title: Joi.string().min(3),
       description: Joi.string().min(10),
       link: Joi.string().uri(),
       is_default: Joi.valid('0','1'),

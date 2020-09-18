@@ -357,7 +357,7 @@ export const getStatistics = async(req: Request, res: Response) => {
 
 const validateCampaign = (campaign) => {
   const schema = Joi.object({
-    title: Joi.string().min(5).required(),
+    title: Joi.string().min(3).required(),
     destination_url: Joi.string().uri().required(),
     advertisement_id: Joi.number(),
   });
@@ -366,7 +366,7 @@ const validateCampaign = (campaign) => {
 
 const validateUpdateCampaign = (campaign) => {
   const schema = Joi.object({
-    title: Joi.string().min(5),
+    title: Joi.string().min(3),
     destination_url: Joi.string().uri(),
     advertisement_id: Joi.number(),
   });

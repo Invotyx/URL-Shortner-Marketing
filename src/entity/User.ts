@@ -83,16 +83,16 @@ export class User {
     return subscription;
   }
 
-  async getCurrentSubscriptionAds(created_at, expires_at){
-    if(expires_at === null){
-      const advertisements = await getRepository(Advertisement).find({
-        created_at: MoreThanOrEqual(created_at),
-        deleted_at:null
-      });
-      return advertisements;
-    }
+  async getCurrentSubscriptionAds(currentSubscriptionPlan){
+    // if(expires_at === null){
+    //   const advertisements = await getRepository(Advertisement).find({
+    //     created_at: MoreThanOrEqual(created_at),
+    //     deleted_at:null
+    //   });
+    //   return advertisements;
+    // }
     const advertisements = await getRepository(Advertisement).find({
-      created_at: Between(created_at, expires_at),
+      user:this,
       deleted_at:null
     });
     return advertisements;
