@@ -11,6 +11,9 @@ COPY . .
 
 RUN echo "export const API_ADDR = 'https://api.shurly.app/api';" > config/constans.js
 RUN echo "export const APP_NAME = 'Shurly';" >> config/constans.js
+RUN echo "export const ADDR = 'https://shurly.app/';" >> config/constans.js
+RUN echo "export const REDIRECT_TIME = 5000;" >> config/constans.js
+RUN echo "export const REDIRECT = false;" >> config/constans.js
 
 RUN yarn run build
 
