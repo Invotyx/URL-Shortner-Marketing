@@ -6,20 +6,8 @@ import { Plan } from "../entity/Plan";
 import { Subscription } from "../entity/Subscription";
 
 export const get = async (req: Request, res: Response) => {
-
-    const subscriptionRepository = getRepository(Subscription);
     const user = req['user'];
-    let subscription = await subscriptionRepository.findOne({
-        where:[
-            {
-                user: user,
-                expires_at:MoreThan(new Date())
-            },
-            {expires_at:null}
-        ],
-        relations:['plan']
-    });
-    
+    const subscription = await user.getCurrentSubscriptionPlan();
     return res.status(200).json({
         success: true,
         message: "",
@@ -28,12 +16,21 @@ export const get = async (req: Request, res: Response) => {
 }
 
 export const create = async (req: Request, res: Response) => {
-    const {error} = validateSubscription(req.body);
-    if (error)
-        return res
-        .status(400)
-        .json({ success: false, message: error.details[0].message, data: [] });
-    
+    //validation if free plan
+    if(req.body.product_id == '1-apple-asfasdfasd'){
+        const {error} = validateFreeSubscription(req.body);
+        if (error)
+            return res
+            .status(400)
+            .json({ success: false, message: error.details[0].message, data: [] });
+    } else{
+    //validation if not free plan
+        const {error} = validateSubscription(req.body);
+        if (error)
+            return res
+            .status(400)
+            .json({ success: false, message: error.details[0].message, data: [] });
+    }
     const { expires_at, payment_method, product_id} = req.body;
     const user = req['user'];
     const planRepository = getRepository(Plan);
@@ -60,57 +57,45 @@ export const create = async (req: Request, res: Response) => {
     }else{
         const subscriptionRepository = getRepository(Subscription);
         try{
-
-            //CHCEK IF SUBSCRIPTION WITH SAME PLAN EXISTS 
-            let existing_subscription = await subscriptionRepository.findOne({
+            let previous_plan = await subscriptionRepository.findOne({
                 where:{
-                    user: user,
-                    plan: plan
+                    user:user,
+                },
+                order: {
+                    created_at:'DESC'
                 },
                 relations:['plan']
             })
-            // IF EXISTS UPDATE SUBSCRIPTION EXPIRY DATE
-            if(existing_subscription){
-                existing_subscription.payment_method = payment_method;
-                existing_subscription.created_at = new Date();
-                existing_subscription.expires_at = expires_at;
-                subscriptionRepository.save(existing_subscription);
+            // Check if previous plan is same as request plan
+            // if are same then renew the plan
+            if(previous_plan && previous_plan.plan == plan){
+                previous_plan.payment_method = payment_method;
+                previous_plan.created_at = new Date();
+                previous_plan.expires_at = expires_at;
+                await subscriptionRepository.save(previous_plan);
                 return res.status(200).json({
                     success: true,
                     message: "",
-                    data: { subscription: existing_subscription },
+                    data: { subscription: previous_plan },
                 });
-            }
-            //CHECK IF SUBSCRIPTION WITH OTHER PLANS EXIST
-            let previous_subscription = await subscriptionRepository.findOne({
-                where:[
-                    {
-                        user: user,
-                        expires_at:MoreThan(new Date())
-                    },
-                    {expires_at:null}
-                ],
-                relations:['plan']
-            });
-            // IF EXISTS EXPIRE IT AND Create New one
-            if(previous_subscription){
-                previous_subscription.expires_at = new Date();
-                subscriptionRepository.save(previous_subscription);
-            }
-            // NOW CREATE NEW ONE 
-            let subscription = new Subscription();
-            subscription.plan = plan;
-            subscription.user = user,
-            subscription.expires_at = expires_at,
-            subscription.payment_method = payment_method;
+            }else{
+                //If not same then expires previous and create new one
+                previous_plan.expires_at = new Date();
+                await subscriptionRepository.save(previous_plan);
 
-            await subscriptionRepository.save(subscription);
-
-            return res.status(200).json({
-                success: true,
-                message: "",
-                data: { subscription },
-              });
+                let new_plan = new Subscription();
+                new_plan.plan = plan;
+                new_plan.expires_at = expires_at,
+                new_plan.payment_method=payment_method,
+                new_plan.user = user;
+                await subscriptionRepository.save(new_plan);
+                return res.status(200).json({
+                    success: true,
+                    message: "",
+                    data: { new_plan },
+                  });
+            }
+            
         }catch(error){
             return res.status(500).json({
                 success: false,
@@ -125,7 +110,16 @@ const validateSubscription = (subscription) => {
     const schema = Joi.object({
       payment_method: Joi.string().valid('apple', 'google'),
       product_id: Joi.required(),
-      expires_at: Joi.date().required()
+      expires_at: Joi.date().min(Date.now()).required()
+    });
+    return schema.validate(subscription);
+}
+
+const validateFreeSubscription = (subscription) => {
+    const schema = Joi.object({
+      payment_method: Joi.string().valid('apple', 'google'),
+      product_id: Joi.required(),
+    //   expires_at: Joi.date().min(Date.now()).required()
     });
     return schema.validate(subscription);
 }

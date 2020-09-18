@@ -73,20 +73,13 @@ export class User {
     const subscription = await subscriptionRepository.findOne({
       where:{
         user:this,
-        expires_at:MoreThan(new Date())
+      },
+      order: {
+        created_at:'DESC'
       },
       relations:['plan']
     })
-    if(!subscription){
-      const subscription = await subscriptionRepository.findOne({
-        where:{
-          user:this,
-          expires_at:null
-        },
-        relations:['plan']
-      })
-      return subscription
-    }
+    
     return subscription;
   }
 
@@ -107,24 +100,16 @@ export class User {
 
   async checkIfAddIsInCurrentSubscriptionPlan(advertisemnt_id){
     const currentSubscriptionPlan = await this.getCurrentSubscriptionPlan();
-    if(currentSubscriptionPlan.expires_at == null){
-      const advertisemnt = await getRepository(Advertisement).findOne({
-        where:{
-          id:advertisemnt_id,
-          deleted_at:null
-        }
-        // created_at: MoreThan(currentSubscriptionPlan.created_at),
-      });  
-      return advertisemnt;
+    if(currentSubscriptionPlan.expires_at != null && currentSubscriptionPlan.expires_at < new Date()){
+      return false
     }
     const advertisemnt = await getRepository(Advertisement).findOne({
       where:{
         id:advertisemnt_id,
-        created_at: Between(currentSubscriptionPlan.created_at, currentSubscriptionPlan.expires_at),
-        deleted_at:null
-
+        deleted_at:null,
+        user: this
       }
-    });
+    });  
     return advertisemnt;
   }
 

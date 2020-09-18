@@ -5,7 +5,7 @@ const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
 import { Campaign } from '../entity/Campaign';
 import { CampaignView } from '../entity/CampaignView';
-// import { Advertisement } from '../entity/Advertisement';
+import { Advertisement } from '../entity/Advertisement';
 
 export const create = async (req: Request, res: Response) => {
   const user = req['user'];
@@ -23,7 +23,7 @@ export const create = async (req: Request, res: Response) => {
     if (!advertisement)
       return res.status(400).json({
         success: false,
-        message: 'Advertisement not found in your current subscription plan',
+        message: 'Advertisement not found!',
         data: {},
       });
   }
@@ -101,7 +101,7 @@ export const update = async (req: Request, res: Response) => {
     if (!advertisement)
       return res.status(400).json({
         success: false,
-        message: 'Advertisement not found in your current subscription plan',
+        message: 'Advertisement not found!',
         data: {},
       });
   }
@@ -237,7 +237,6 @@ export const remove = async (req: Request, res: Response) => {
 
 export const view = async (req: Request, res: Response) => {
   const internal_url = req.params.id;
-  const user = req['user'];
 
   const campaignRepository = getRepository(Campaign);
   const campaign = await campaignRepository.findOne({
@@ -258,8 +257,28 @@ export const view = async (req: Request, res: Response) => {
       campaign.views++;
       const result = await campaignRepository.save(campaign);
       const campaign_view = new CampaignView();
-      if(campaign.advertisement){
-        campaign_view.advertisement = campaign.advertisement;
+      if(result.advertisement ){
+        campaign_view.advertisement = result.advertisement;
+        var advertisement = await getRepository(Advertisement).findOne({
+          where:{
+            id:result.advertisement.id,
+            deleted_at:null
+          },
+          relations:['user']
+        })
+
+        if(advertisement){
+          advertisement.views++;
+          advertisement = await getRepository(Advertisement).save(advertisement);
+          const user = advertisement.user;
+          const subscription = await user.getCurrentSubscriptionPlan();
+          advertisement['subscription'] = subscription;
+          advertisement.user = null;
+          result.advertisement = advertisement;
+        }else{
+          result.advertisement = null;
+        }
+
       }
       campaign_view.campaign = campaign;
       await getRepository(CampaignView).save(campaign_view);

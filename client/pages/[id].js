@@ -5,6 +5,7 @@ import Advertisement from "./Advertisement";
 import NoAdvertisement from "./NoAdvertisement";
 import Head from "next/head";
 import Loader from "../components/Loader";
+import AdFooter from "../components/AdFooter";
 import Error from "../components/Error";
 import { API_ADDR } from "../config/constans";
 export default function Campaign() {
@@ -49,7 +50,7 @@ export default function Campaign() {
     return <Loader />;
   } else {
     return (
-      <div className="row justify-content-around">
+      <div className="row ">
         <Head>
           <title>{item.meta_title}</title>
           <link
@@ -64,9 +65,18 @@ export default function Campaign() {
           <meta property="facebook:image" content={item.meta_image}></meta>
           <meta property="image" content={item.meta_image}></meta>
         </Head>
-        <div className="col-md-8">
+        <div
+          className="col-sm-12 "
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
           {item.advertisement ? (
             <Advertisement
+              advertisement={item.advertisement}
               destination_url={item.destination_url}
               id={item.advertisement.id}
             />
@@ -74,6 +84,7 @@ export default function Campaign() {
             <NoAdvertisement destination_url={item.destination_url} />
           )}
         </div>
+        <AdFooter advertisement={item.advertisement} />
       </div>
     );
   }

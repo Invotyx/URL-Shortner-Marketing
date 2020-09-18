@@ -10,8 +10,6 @@ interface MulterRequest extends Request {
 }
 
 export const create = async (req: Request , res: Response) => {
-
-    
     const user = req['user'];
     const _file = ((req as MulterRequest).file);
     if(!_file){
@@ -22,9 +20,9 @@ export const create = async (req: Request , res: Response) => {
         })
     }
     
-    //CHECK CURRENT SUBSCRIPTION PLAN
+    //CHECK CURRENT SUBSCRIPTION PLAN IS EXPIRED
     const currentSubscriptionPlan = await user.getCurrentSubscriptionPlan();
-    if(!currentSubscriptionPlan){
+    if(currentSubscriptionPlan.expires_at != null && currentSubscriptionPlan.expires_at < new Date()){
         return res.status(400).json({
             success: false,
             message:"Your Subscription plan is expired. Kindly upgrade your Plan",
@@ -175,23 +173,27 @@ export const getUserAds = async(req: Request, res: Response) => {
     const user = req['user'];
     // GET USER'S CURRENT SUBSCRIPTION PLAN  
     const currentSubscriptionPlan = await user.getCurrentSubscriptionPlan();
-    if(!currentSubscriptionPlan){
+    console.log(currentSubscriptionPlan);
+    if(currentSubscriptionPlan.expires_at != null && currentSubscriptionPlan.expires_at < new Date()){
         return res.status(400).json({
             success: false,
-            message:"No any advertisement(s) found",
+            message:"Your Subscription plan is expired!",
             data:{}
         });
     }
     // GET ADS OF CURRENT SUBSCRIPTION PLAN
-    const currentSubscriptionAds = await user.getCurrentSubscriptionAds(
-        currentSubscriptionPlan.created_at,
-        currentSubscriptionPlan.expires_at
-    );
-    if(currentSubscriptionAds.length > 0){
+    const advertisements = await getRepository(Advertisement).find({
+        where:{
+            deleted_at:null
+        },
+        take:currentSubscriptionPlan.plan.limit
+
+    });
+    if(advertisements.length > 0){
         return res.status(200).json({
             success: true,
             message: "",
-            data: {advertisements:currentSubscriptionAds},
+            data: {advertisements},
         });
     }else{
         return res.status(400).json({
@@ -279,7 +281,6 @@ export const view = async(req: Request, res: Response) => {
                 where:{id:result.user_id}
             })
             const subscriptionPlan = await user.getCurrentSubscriptionPlan();
-            
             return res.status(200).send({
                 success:true,
                 message:'',
