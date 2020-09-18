@@ -184,10 +184,10 @@ export const getUserAds = async(req: Request, res: Response) => {
     // GET ADS OF CURRENT SUBSCRIPTION PLAN
     const advertisements = await getRepository(Advertisement).find({
         where:{
-            deleted_at:null
+            deleted_at:null,
+            user:user
         },
         take:currentSubscriptionPlan.plan.limit
-
     });
     if(advertisements.length > 0){
         return res.status(200).json({

@@ -36,7 +36,8 @@
     "typeorm-plus": "^0.1.2",
     "url-metadata": "^2.4.1",
     "aws-sdk": "^2.752.0",
-    "multer-s3": "^2.9.0"
+    "multer-s3": "^2.9.0",
+    "node-cron": "^2.0.3"
   },
   "scripts": {
     "tsc": "tsc",
