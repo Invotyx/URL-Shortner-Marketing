@@ -50,6 +50,13 @@ export default function Campaign() {
   } else if (!isLoaded) {
     return <Loader />;
   } else {
+    let footer = false;
+    if (
+      !item.advertisement ||
+      item.advertisement.subscription.plan.title == "Cause"
+    ) {
+      footer = true;
+    }
     return (
       <div className="row ">
         <Head>
@@ -85,7 +92,7 @@ export default function Campaign() {
             <NoAdvertisement destination_url={item.destination_url} />
           )}
         </div>
-        <AdFooter advertisement={item.advertisement} />
+        {footer ? <AdFooter advertisement={item.advertisement} /> : <div></div>}
       </div>
     );
   }

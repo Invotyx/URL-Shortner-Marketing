@@ -17,15 +17,7 @@ export default class NoAdvertisement extends Component {
   render() {
     return (
       <div className="">
-        <div className="card" style={{ width: "50rem" }}>
-          <a
-            href={ADDR}
-            target="blank"
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            <div className="card-footer text-right">Powered By {APP_NAME}</div>
-          </a>
-        </div>
+        <div className="card" style={{ width: "50rem" }}></div>
       </div>
     );
   }

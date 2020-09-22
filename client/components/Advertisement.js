@@ -1,11 +1,7 @@
 import React, { Component } from "react";
-import { API_ADDR } from "../config/constans";
-import { ADDR } from "../config/constans";
-import { APP_NAME } from "../config/constans";
+
 import { REDIRECT } from "../config/constans";
 import { REDIRECT_TIME } from "../config/constans";
-import Loader from "../components/Loader";
-import Error from "../components/Error";
 
 export default class Advertisement extends Component {
   constructor(props) {
@@ -45,7 +41,7 @@ export default class Advertisement extends Component {
                 <img
                   className="card-img-top"
                   src={`${item.attachment}`}
-                  height="350px"
+                  height="420px"
                   alt="Card image cap"
                 />
               </a>
@@ -73,22 +69,11 @@ export default class Advertisement extends Component {
                   <img
                     className="card-img-top"
                     src={`${item.attachment}`}
-                    height="350px"
+                    height="400px"
                     alt="Card image cap"
                   />
                 </a>
               </div>
-            )}
-            {plan.title == "Cause" && (
-              <a
-                href={ADDR}
-                target="blank"
-                style={{ textDecoration: "none", color: "black" }}
-              >
-                <div className="card-footer text-right">
-                  Powered By {APP_NAME}
-                </div>
-              </a>
             )}
           </div>
         </div>

@@ -22,7 +22,7 @@ export default function AdFooter(props) {
             target="blank"
             style={{ textDecoration: "none", color: "black" }}
           >
-            <div className="card-footer text-right">{APP_NAME}</div>
+            <div className="text-right">Powered by {APP_NAME}</div>
           </a>
         </span>
       </div>
