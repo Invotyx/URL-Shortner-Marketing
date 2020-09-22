@@ -4,6 +4,7 @@ import * as Joi from "joi";
 
 import { Advertisement } from "../entity/Advertisement";
 import { User } from "../entity/User";
+import { Campaign } from "../entity/Campaign";
 
 interface MulterRequest extends Request {
     file: any;
@@ -214,7 +215,7 @@ export const remove = async (req: Request, res: Response) => {
             id: id,
             user:user,
             deleted_at:null
-        }
+        },
     });
     if(!ad_exists){
         return res.status(400).json({
@@ -226,6 +227,22 @@ export const remove = async (req: Request, res: Response) => {
     
     try{
     // Remove AD
+        const campaign = await getRepository(Campaign).findOne({
+            where:{
+                user:user,
+                advertisement:ad_exists,
+                deleted_at:null
+            },
+        });
+        if(campaign ){
+            const campaign_id = campaign.id;
+            await getRepository(Campaign)
+            .createQueryBuilder()
+            .update(Campaign)
+            .set({ deleted_at:new Date() })
+            .where("id = :campaign_id", { campaign_id })
+            .execute();
+        }
         const advertisement = await getRepository(Advertisement)
         .createQueryBuilder()
         .update(Advertisement)

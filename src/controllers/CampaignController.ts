@@ -43,7 +43,7 @@ export const create = async (req: Request, res: Response) => {
       // CREATE Campaign
 
       let campaign = new Campaign();
-      campaign.title = title;
+      campaign.title = metaData.title;
       campaign.meta_title = metaData.title;
       campaign.meta_description = metaData.description;
       campaign.meta_image = metaData.image;
@@ -112,6 +112,7 @@ export const update = async (req: Request, res: Response) => {
   try {
     campaignRepository.merge(campaign, {
       ...req.body,
+      title:metaData.title,
       advertisement: advertisement,
       meta_description: metaData.description,
       meta_title: metaData.title,
@@ -357,7 +358,7 @@ export const getStatistics = async(req: Request, res: Response) => {
 
 const validateCampaign = (campaign) => {
   const schema = Joi.object({
-    title: Joi.string().min(3).required(),
+    title: Joi.string().min(3),
     destination_url: Joi.string().uri().required(),
     advertisement_id: Joi.number(),
   });
