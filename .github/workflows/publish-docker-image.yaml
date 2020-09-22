@@ -5,7 +5,7 @@ on:
       - master
 
 jobs:
-  push_to_registries:
+  push_api_to_github_registry:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +20,13 @@ jobs:
           repository: invotyx/shurly_app/api_shurly_app
           tags: latest
           path: .
+
+  push_app_to_github_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
       - name: Push frontend to GitHub Packages
         uses: docker/build-push-action@v1
         with:
