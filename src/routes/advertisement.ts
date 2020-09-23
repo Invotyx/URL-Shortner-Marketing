@@ -41,7 +41,7 @@ var storage = multerS3({
       cb(null, {fieldName: file.fieldname});
     },
     key: function (req, file, cb) {
-      const key = `advertisement/${req['userId']+'_'+Date.now()+'_'+randomize('Aa0', 6)+path.extname(file.originalname)}`
+      const key = `uploads/${req['userId']+'_'+Date.now()+'_'+randomize('Aa0', 6)+path.extname(file.originalname)}`
       cb(null, key);
     }
 })
