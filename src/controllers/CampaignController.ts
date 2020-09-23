@@ -3,6 +3,7 @@ import { getRepository, Between } from 'typeorm';
 import * as Joi from 'joi';
 const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
+import config from '../config/config'
 import { Campaign } from '../entity/Campaign';
 import { CampaignView } from '../entity/CampaignView';
 import { Advertisement } from '../entity/Advertisement';
@@ -236,6 +237,7 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 
+
 export const view = async (req: Request, res: Response) => {
   const internal_url = req.params.id;
 
@@ -248,18 +250,49 @@ export const view = async (req: Request, res: Response) => {
     relations: ['advertisement'],
   });
   if (!campaign) {
-    return res.status(500).json({
-      success: false,
-      message: 'Campaign with this id not found!',
-      data: {},
-    });
+    res.render('pages/404',{campaign:{}});
+    
   } else {
-    try {
+      
+    if(campaign.advertisement ){
+      var advertisement = await getRepository(Advertisement).findOne({
+        where:{
+          id:campaign.advertisement.id,
+          deleted_at:null
+        },
+        relations:['user']
+      })
+
+      if(advertisement){
+        const user = advertisement.user;
+        const subscription = await user.getCurrentSubscriptionPlan();
+        advertisement['subscription'] = subscription;
+        advertisement.user = null;
+        campaign.advertisement = advertisement;
+      }else{
+        campaign.advertisement = null;
+      }
+    }
+    res.render('pages/index',{campaign:campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
+  }
+};
+
+export const incrementViewCount = async (req: Request, res: Response) => {
+  const campaign_id = req.params.id;
+  const campaignRepository = getRepository(Campaign);
+  try{
+    var campaign = await campaignRepository.findOne({
+      where: {
+        id:campaign_id,
+        deleted_at: null,
+      },
+      relations: ['advertisement'],
+    });
+    if(campaign){
       campaign.views++;
       const result = await campaignRepository.save(campaign);
       const campaign_view = new CampaignView();
       if(result.advertisement ){
-        campaign_view.advertisement = result.advertisement;
         var advertisement = await getRepository(Advertisement).findOne({
           where:{
             id:result.advertisement.id,
@@ -267,8 +300,8 @@ export const view = async (req: Request, res: Response) => {
           },
           relations:['user']
         })
-
         if(advertisement){
+          console.log(advertisement)
           advertisement.views++;
           advertisement = await getRepository(Advertisement).save(advertisement);
           const user = advertisement.user;
@@ -276,28 +309,26 @@ export const view = async (req: Request, res: Response) => {
           advertisement['subscription'] = subscription;
           advertisement.user = null;
           result.advertisement = advertisement;
-        }else{
-          result.advertisement = null;
+
+          campaign_view.advertisement = result.advertisement;
+          campaign_view.campaign = campaign;
+          await getRepository(CampaignView).save(campaign_view);
+          return res.status(200).json({
+            success:true,
+            message:"View updated Successfully",
+            data:{}
+          })
         }
-
       }
-      campaign_view.campaign = campaign;
-      await getRepository(CampaignView).save(campaign_view);
-      return res.status(200).send({
-        success: true,
-        message: '',
-        data: { campaign: result },
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: 'Something went wrong!',
-        data: { error },
-      });
     }
+  }catch(error){
+    return res.status(500).json({
+      success:false,
+      message:"Something went wrong",
+      data:{}
+    })
   }
-};
-
+}
 export const getAllCampaigns = async (req: Request, res: Response) => {
   const campaignRepository = getRepository(Campaign);
   const campaigns = await campaignRepository.find({

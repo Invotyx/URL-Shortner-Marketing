@@ -8,7 +8,9 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
+import * as path from 'path';
 
+import * as CampaignController from "./controllers/CampaignController";
 
 var cron = require('node-cron');
 
@@ -23,9 +25,15 @@ createConnection()
     // Call midlewares
     app.use(morgan('combined'));
     app.use(cors());
-    app.use('/', express.static('client/build'));
-    app.use('/:id', express.static('client/build'));
-    app.use('/uploads/', express.static('uploads'));
+    app.use(express.static('public'));
+    app.use('/api/', routes);
+    app.use('/:id', CampaignController.view);
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, './views'))
+    app.use('/', (req, res) => {
+      res.render('pages/home');
+    });
+    // app.use('/', express.static('client/build'));
     app.use(helmet());
     app.use(bodyParser.urlencoded({ extended: true }));
     
@@ -60,8 +68,9 @@ createConnection()
       })
       console.log('running a task every day');
     });
-    //Set all routes from routes folder
+    //Set all api from routes folder
     app.use('/api/', routes);
+
     const PORT = process.env.PORT || 8080;
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT}!`);

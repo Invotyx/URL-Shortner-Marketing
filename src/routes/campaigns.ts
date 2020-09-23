@@ -19,4 +19,5 @@ router.get("/get-statistics/:id", [checkJwt, upload.none()] , CampaignController
 // Public apis
 router.get("/view/get-all", [upload.none()] , CampaignController.getAllCampaigns);
 router.get("/view/:id", [upload.none()] , CampaignController.view);
+router.get("/update-view/:id", [upload.none()] , CampaignController.incrementViewCount);
 export default router;

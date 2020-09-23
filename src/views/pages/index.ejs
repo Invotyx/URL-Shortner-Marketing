@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= campaign.meta_title %></title>
+    <link
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous"
+    />
+    <!-- <link rel="icon" href="<%= campaign.meta_image %>" /> -->
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
+
+    <meta name="title" content="<%= campaign.meta_title %>">
+    <meta name="description" content="<%= campaign.description %>">
+    <meta name="image" content="<%= campaign.meta_image %>">
+
+    <meta property="title" content="<%= campaign.meta_title %>">
+    <meta property="description" content="<%= campaign.description %>">
+    <meta property="image" content="<%= campaign.meta_image %>">
+
+    <!-- Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= campaign.meta_title %>">
+    <meta property="og:description" content="<%= campaign.meta_description %>">
+    <meta property="og:image" content="<%= campaign.meta_image %>">
+    
+    <!-- Twitter -->
+    <meta property="twitter:title" content="<%= campaign.meta_title %>">
+    <meta property="twitter:description" content="<%= campaign.meta_description %>">
+    <meta property="twitter:image" content="<%= campaign.meta_image %>">
+  <style>
+    #preloader {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 99999;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      background-image: url(assets/img/preloader.gif);
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-color: #fff;
+  }
+  </style>
+</head>
+<body>
+  <input type="hidden" name="redirect" class="redirect" value="<%=config.redirect%>">
+  <input type="hidden" name="time" class="time" value="<%=config.time%>">
+  <input type="hidden" name="url" class="url" value="<%=campaign.destination_url%>">
+  <input type="hidden" name="campaign" class="campaign" value="<%=campaign.id%>">
+  <div id="preloader"></div>
+    <div
+        class="col-sm-12 "
+        style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          "
+        >
+      <!-- TODO 404 page if campaign not found -->
+        <% if (campaign.advertisement) { %>
+  
+            <div class="container">
+                <div class="center">
+                  <div
+                    class="card row"
+                    style="width: 100%"
+                    
+                  >
+                    <% if(campaign.advertisement.display == 'image') { %>
+
+                      <a
+                        href={item.link}
+                        target="blank"
+                        style="text-decoration: none; color: black" }}
+                      >
+                        <img
+                          class="card-img-top"
+                          src="<%= campaign.advertisement.attachment %>"
+                          height="420px"
+                          alt="Card image cap"
+                        >
+                      </a>
+                    <% } %>
+                    <% if(campaign.advertisement.display == 'title') { %>
+                      <a
+                        href="<%= campaign.advertisement.link %>"
+                        target="blank"
+                        style="text-decoration: none; color: black" }}
+                      >
+                        <div class="card-body">
+                            <h3 class="card-title text-center">
+                              <%= campaign.advertisement.title %>
+                            </h3>
+                        </div>
+                      </a>
+                    <% } %>
+        
+                    <% if(campaign.advertisement.display == 'both') { %>
+                      <div class="card-body">
+                        <a
+                          href="<%= campaign.advertisement.link %>"
+                          target="blank"
+                          style="text-decoration: none; color: black" }}
+                        >
+                          <h3 class="card-title text-center"><%= campaign.advertisement.title %></h3>
+                          <img
+                            class="card-img-top"
+                            src="<%= campaign.advertisement.attachment %>"
+                            height="400px"
+                            alt="Card image cap"
+                          >
+                        </a>
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+        <% }else{ %>
+            <div class="">
+                <div class="card" style="width:50rem"></div>
+              </div>
+        <% } %>
+      </div>
+      <% if (!campaign.advertisement) { %>
+      <footer
+        class="footer"
+        style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 60px;
+          line-height: 60px;
+          padding: 0 20px;
+          background-color: #f5f5f5;
+        "
+      >
+        <div class="">
+          <span class="text-muted">
+            <a
+              href="/"
+              target="blank"
+              style=" text-decoration: none; color: black"
+            >
+              <div class="text-right">Powered by Shurly</div>
+            </a>
+          </span>
+        </div>
+      </footer>
+      <% } %>
+      
+      <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause') { %>
+        <footer
+        class="footer"
+        style="
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 60px;
+          line-height: 60px;
+          padding: 0 20px;
+          background-color: #f5f5f5;
+        "
+      >
+        <div class="">
+          <span class="text-muted">
+            <a
+              href="/"
+              target="blank"
+              style=" text-decoration: none; color: black"
+            >
+              <div class="text-right">Powered by Shurly</div>
+            </a>
+          </span>
+        </div>
+      </footer>
+      <% } %>
+    </div>
+</body>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script type='text/javascript'>
+  $(function(){
+    const redirect = $('.redirect').val()
+    const time = $('.time').val()
+    const campaign = $('.campaign').val()
+    const url = $('.url').val()
+    console.log(url)
+    console.log(redirect)
+    console.log(time)
+    if(redirect == 'true'){
+      setTimeout(() => {
+        window.location = url;
+      }, time);
+    }
+    $(window).on( 'load', function(){
+      $('#preloader').delay(300).fadeOut('slow',function(){
+        $(this).remove();
+      });    
+    }); 
+    $.ajax({
+      url: '/api/campaign/update-view/'+campaign,
+      success: function(data){
+        console.log(data)
+      },
+    });
+  });
+</script>
+</html>
