@@ -20,7 +20,7 @@ RUN npm install --only=production
 
 COPY --from=development /usr/src/app/build ./build
 
-COPY public ./
+COPY public ./public
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
