@@ -23,7 +23,6 @@ createConnection()
     const app = express();
 
     // Call midlewares
-    app.use(helmet());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(morgan('combined'));
     app.use(cors());
@@ -35,6 +34,7 @@ createConnection()
     app.use('/', (req, res) => {
       res.render('pages/home');
     });
+    app.use(helmet());
     // app.use('/', express.static('client/build'));
 
     //CORN JOB
@@ -69,7 +69,7 @@ createConnection()
       console.log('running a task every day');
     });
     //Set all api from routes folder
-    app.use('/api/', routes);
+    // app.use('/api/', routes);
 
     const PORT = process.env.PORT || 8080;
     app.listen(PORT, () => {
