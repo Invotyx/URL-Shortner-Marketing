@@ -24,7 +24,7 @@ export const create = async (req: Request, res: Response) => {
     if (!advertisement)
       return res.status(400).json({
         success: false,
-        message: 'Advertisement not found!',
+        message: 'Advertisement ID is invalid',
         data: {},
       });
   }
@@ -59,7 +59,7 @@ export const create = async (req: Request, res: Response) => {
       return res.status(200).send({
         success: true,
         message: '',
-        data: { campaign },
+        data: { link:campaign },
       });
     } catch (error) {
       return res.status(500).json({
@@ -85,7 +85,7 @@ export const update = async (req: Request, res: Response) => {
   if (!campaign) {
     return res.status(400).json({
       success: false,
-      message: 'Campaign with current ID not found',
+      message: 'Link with current ID not found',
       data: {},
     });
   }
@@ -122,8 +122,8 @@ export const update = async (req: Request, res: Response) => {
     const result = await campaignRepository.save(campaign);
     return res.status(200).send({
       success: true,
-      message: 'Campaign updated successfully',
-      data: { campaign: result },
+      message: 'Link updated successfully',
+      data: { link: result },
     });
   } catch (error) {
     return res.status(500).json({
@@ -150,14 +150,14 @@ export const get = async (req: Request, res: Response) => {
   if (!campaign) {
     return res.status(500).json({
       success: false,
-      message: 'Campaign with this id not found!',
+      message: 'Link with this id not found!',
       data: {},
     });
   } else {
     return res.status(500).json({
       success: true,
       message: '',
-      data: { campaign },
+      data: { link:campaign },
     });
   }
 };
@@ -175,14 +175,14 @@ export const getUserCampaigns = async (req: Request, res: Response) => {
   if (!campaigns) {
     return res.status(500).json({
       success: false,
-      message: 'Campaigns not found!',
+      message: 'Links not found!',
       data: {},
     });
   } else {
     return res.status(200).json({
       success: true,
       message: '',
-      data: { campaigns },
+      data: { links:campaigns },
     });
   }
 };
@@ -201,13 +201,13 @@ export const remove = async (req: Request, res: Response) => {
   if (!campaign_exists) {
     return res.status(400).json({
       success: false,
-      message: 'Sorry Campaign with this ID not found',
+      message: 'Sorry link with this ID not found',
       data: {},
     });
   }
 
   try {
-    // Remove AD
+    // Remove Campaign
     const campaign = await getRepository(Campaign)
       .createQueryBuilder()
       .update(Campaign)
@@ -218,13 +218,13 @@ export const remove = async (req: Request, res: Response) => {
     if (campaign.affected) {
       return res.status(200).send({
         success: true,
-        message: 'Campaign deleted successfully',
+        message: 'link deleted successfully',
         data: {},
       });
     } else {
       return res.status(200).send({
         success: true,
-        message: 'You are not allowed to delete this advertisement',
+        message: 'You are not allowed to delete this link',
         data: {},
       });
     }
@@ -273,7 +273,7 @@ export const view = async (req: Request, res: Response) => {
         campaign.advertisement = null;
       }
     }
-    res.render('pages/index',{campaign:campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
+    res.render('pages/index',{link:campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
   }
 };
 
@@ -301,7 +301,6 @@ export const incrementViewCount = async (req: Request, res: Response) => {
           relations:['user']
         })
         if(advertisement){
-          console.log(advertisement)
           advertisement.views++;
           advertisement = await getRepository(Advertisement).save(advertisement);
           const user = advertisement.user;
@@ -339,14 +338,14 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
   if (!campaigns) {
     return res.status(400).json({
       success: false,
-      message: 'Campaigns not found!',
+      message: 'links not found!',
       data: {},
     });
   } else {
     return res.status(200).json({
       success: true,
       message: '',
-      data: { campaigns },
+      data: { links:campaigns },
     });
   }
 };
@@ -375,7 +374,7 @@ export const getStatistics = async(req: Request, res: Response) => {
       return res.status(200).json({
         success:true,
         message: "",
-        data: {campaigns}
+        data: {links:campaigns}
       })
     }catch(error){
       res.status(500).json({
