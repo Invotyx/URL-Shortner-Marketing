@@ -1,138 +1,163 @@
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
-import { User } from "../entity/User";
-import { UserDevice } from "../entity/UserDevice";
-import { SocialLogin } from "../entity/SocialLogin";
-import * as Joi from "joi";
-import config from "../config/config";
+import { Request, Response } from 'express';
+import { getRepository } from 'typeorm';
+import { User } from '../entity/User';
+import { UserDevice } from '../entity/UserDevice';
+import { SocialLogin } from '../entity/SocialLogin';
+import * as Joi from 'joi';
+import config from '../config/config';
 
-
-export const login = async (req: Request, res: Response) => {  
+export const login = async (req: Request, res: Response) => {
+  console.log(req);
   //API KEY VALIDATION
-  if(!req.body.api_key || req.body.api_key !== config.apiKey)
+  if (!req.body.api_key || req.body.api_key !== config.apiKey)
     return res
-    .status(400)
-    .json({ success: false, message: "Invalid Request", data: [] });
+      .status(400)
+      .json({ success: false, message: 'Invalid Request', data: [] });
   //Validate user
-  const {social_id, provider, email, password, phone_number, first_name, last_name} = req.body
-  const { error } = validateUser({social_id, provider, email, password, phone_number, first_name, last_name});
+  const {
+    social_id,
+    provider,
+    email,
+    password,
+    phone_number,
+    first_name,
+    last_name,
+  } = req.body;
+  const { error } = validateUser({
+    social_id,
+    provider,
+    email,
+    password,
+    phone_number,
+    first_name,
+    last_name,
+  });
   if (error)
-  return res
-  .status(400)
-  .json({ success: false, message: error.details[0].message, data: [] });
-  
+    return res
+      .status(400)
+      .json({ success: false, message: error.details[0].message, data: [] });
+
   const socialLoginRepository = getRepository(SocialLogin);
   const userRepository = getRepository(User);
-   
-  try{
-    //Check if Social Login found 
+
+  try {
+    //Check if Social Login found
     const social_login = await socialLoginRepository.findOne({
-      where:{
-        provider:req.body.provider,
-        social_id:req.body.social_id
+      where: {
+        provider: req.body.provider,
+        social_id: req.body.social_id,
       },
-      relations:['user']
+      relations: ['user'],
     });
-    if(social_login){
-      const user = await userRepository.findOne(social_login.user.id,{select: ["id", "email", "first_name","last_name","phone_number","profile_image"]});
+    if (social_login) {
+      const user = await userRepository.findOne(social_login.user.id, {
+        select: [
+          'id',
+          'email',
+          'first_name',
+          'last_name',
+          'phone_number',
+          'profile_image',
+        ],
+      });
       const plan = await user.getCurrentSubscriptionPlan();
       const token = user.generateToken();
       return res.status(200).json({
         success: true,
-        message: "",
-        data: { token, user, subscription:plan },
+        message: '',
+        data: { token, user, subscription: plan },
       });
-    }else{
-    //  CREATE NEW USER
-      const user = new User();        
-      user.email= req.body.email,
-      user.phone_number= req.body.phone_number,
-      user.password= req.body.password,
-      user.first_name= req.body.first_name,
-      user.last_name= req.body.last_name,
-      // IF Request contains password then hash it
-      req.body.password && user.hashPassword()
+    } else {
+      //  CREATE NEW USER
+      const user = new User();
+      (user.email = req.body.email),
+        (user.phone_number = req.body.phone_number),
+        (user.password = req.body.password),
+        (user.first_name = req.body.first_name),
+        (user.last_name = req.body.last_name),
+        // IF Request contains password then hash it
+        req.body.password && user.hashPassword();
       await userRepository.save(user);
 
       // CREATE SOCIAL LOGIN
       const social_login = new SocialLogin();
-      social_login.provider = req.body.provider,
-      social_login.social_id = req.body.social_id,
-      social_login.user = user,
-      await socialLoginRepository.save(social_login);
+      (social_login.provider = req.body.provider),
+        (social_login.social_id = req.body.social_id),
+        (social_login.user = user),
+        await socialLoginRepository.save(social_login);
 
       // ASSIGN FREE SUBSCRIPTION PLAN
-      const plan = await user.addFreePlan(req.body.payment_method)
-      const subscriptionPlan = await user.getCurrentSubscriptionPlan()
+      const plan = await user.addFreePlan(req.body.payment_method);
+      const subscriptionPlan = await user.getCurrentSubscriptionPlan();
       const token = user.generateToken();
       return res.status(200).json({
         success: true,
-        message: "",
-        data: { 
-          token, 
-          user:{
-            "id":user.id,
-            "email":user.email,
-            "first_name":user.first_name,
-            "last_name":user.last_name,
-            "phone_number":user.phone_number,
-            "profile_image":user.profile_image
+        message: '',
+        data: {
+          token,
+          user: {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            phone_number: user.phone_number,
+            profile_image: user.profile_image,
           },
-          subscription:subscriptionPlan
+          subscription: subscriptionPlan,
         },
       });
     }
-  }catch (error) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
-      data: {error},
+      message: 'Something went wrong!',
+      data: { error },
     });
   }
-}
+};
 
-export const logout = async (req:Request, res:Response) => {
+export const logout = async (req: Request, res: Response) => {
   const user = req['user'];
-  if(!req.body.device_id) 
-    return res
-      .status(400)
-      .json({
-        success:false,
-        message:'Device id is required',
-        data:{body:req.body}
-      })
-    const {device_id, device_name} = req.body;
-    const user_device = await getRepository(UserDevice).findOne({
-        where:{
-            device_id:device_id,
-            user:user
-        }
-    })
-    if(!user_device){
-      return res.status(400).json({
-        success:false,
-        message:'User Device not found',
-        data:{}
-      })
-    }else{
-      try{
-        const result = await getRepository(UserDevice).delete({ user: user, device_id:device_id });
-        return res.status(200).json({
-          success:true,
-          message:'',
-          data:{result}
-        })
-      }catch(error){
-        return res.status(500).json({
-          success:false,
-          message:'Something went wrong',
-          data:{error}
-        })
-      }
+  if (!req.body.device_id)
+    return res.status(400).json({
+      success: false,
+      message: 'Device id is required',
+      data: { body: req.body },
+    });
+  const { device_id, device_name } = req.body;
+  const user_device = await getRepository(UserDevice).findOne({
+    where: {
+      device_id: device_id,
+      user: user,
+    },
+  });
+  if (!user_device) {
+    return res.status(400).json({
+      success: false,
+      message: 'User Device not found',
+      data: {},
+    });
+  } else {
+    try {
+      const result = await getRepository(UserDevice).delete({
+        user: user,
+        device_id: device_id,
+      });
+      return res.status(200).json({
+        success: true,
+        message: '',
+        data: { result },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        data: { error },
+      });
     }
-  
-} 
-//Validate user 
+  }
+};
+//Validate user
 const validateUser = (user) => {
   const schema = Joi.object({
     provider: Joi.string().required(),
@@ -145,5 +170,4 @@ const validateUser = (user) => {
     payment_method: Joi.string().valid('apple', 'google'),
   });
   return schema.validate(user);
-}
-
+};

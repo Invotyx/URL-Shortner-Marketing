@@ -1,10 +1,10 @@
 export default {
-  jwtSecret: "@QEGTUI",
+  jwtSecret: '@QEGTUI',
   apiKey: 'asdfas89879ahskjdhf7t87a6sd',
-  accessKeyId:'AKIAUPRGRPWTGKMVQCO4' ,
-  secretAccessKey:'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' ,
+  accessKeyId: 'AKIAUPRGRPWTGKMVQCO4',
+  secretAccessKey: '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',
   region: 'us-east-2',
-  APP_NAME : "Shurly",
-  REDIRECT_TIME : 5000,
-  REDIRECT : true,
+  APP_NAME: 'Shurly',
+  REDIRECT_TIME: 5000,
+  REDIRECT: false,
 };

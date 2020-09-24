@@ -23,6 +23,8 @@ createConnection()
     const app = express();
 
     // Call midlewares
+    app.use(helmet());
+    app.use(bodyParser.urlencoded({ extended: true }));
     app.use(morgan('combined'));
     app.use(cors());
     app.use(express.static('public'));
@@ -34,8 +36,6 @@ createConnection()
       res.render('pages/home');
     });
     // app.use('/', express.static('client/build'));
-    app.use(helmet());
-    app.use(bodyParser.urlencoded({ extended: true }));
 
     //CORN JOB
 
