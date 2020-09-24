@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title><%= link.meta_title %></title>
+    <title><%= campaign.meta_title %></title>
     <link
     rel="stylesheet"
     href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
     crossorigin="anonymous"
     />
-    <!-- <link rel="icon" href="<%= link.meta_image %>" /> -->
+    <!-- <link rel="icon" href="<%= campaign.meta_image %>" /> -->
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
 
-    <meta name="title" content="<%= link.meta_title %>">
-    <meta name="description" content="<%= link.description %>">
-    <meta name="image" content="<%= link.meta_image %>">
+    <meta name="title" content="<%= campaign.meta_title %>">
+    <meta name="description" content="<%= campaign.description %>">
+    <meta name="image" content="<%= campaign.meta_image %>">
 
-    <meta property="title" content="<%= link.meta_title %>">
-    <meta property="description" content="<%= link.description %>">
-    <meta property="image" content="<%= link.meta_image %>">
+    <meta property="title" content="<%= campaign.meta_title %>">
+    <meta property="description" content="<%= campaign.description %>">
+    <meta property="image" content="<%= campaign.meta_image %>">
 
     <!-- Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="<%= link.meta_title %>">
-    <meta property="og:description" content="<%= link.meta_description %>">
-    <meta property="og:image" content="<%= link.meta_image %>">
+    <meta property="og:title" content="<%= campaign.meta_title %>">
+    <meta property="og:description" content="<%= campaign.meta_description %>">
+    <meta property="og:image" content="<%= campaign.meta_image %>">
     
     <!-- Twitter -->
-    <meta property="twitter:title" content="<%= link.meta_title %>">
-    <meta property="twitter:description" content="<%= link.meta_description %>">
-    <meta property="twitter:image" content="<%= link.meta_image %>">
+    <meta property="twitter:title" content="<%= campaign.meta_title %>">
+    <meta property="twitter:description" content="<%= campaign.meta_description %>">
+    <meta property="twitter:image" content="<%= campaign.meta_image %>">
   <style>
     #preloader {
       position: fixed;
@@ -48,8 +48,8 @@
 <body>
   <input type="hidden" name="redirect" class="redirect" value="<%=config.redirect%>">
   <input type="hidden" name="time" class="time" value="<%=config.time%>">
-  <input type="hidden" name="url" class="url" value="<%=link.destination_url%>">
-  <input type="hidden" name="campaign" class="campaign" value="<%=link.id%>">
+  <input type="hidden" name="url" class="url" value="<%=campaign.destination_url%>">
+  <input type="hidden" name="campaign" class="campaign" value="<%=campaign.id%>">
   <div id="preloader"></div>
     <div
         class="col-sm-12 "
@@ -61,7 +61,7 @@
           "
         >
       <!-- TODO 404 page if campaign not found -->
-        <% if (link.advertisement) { %>
+        <% if (campaign.advertisement) { %>
   
             <div class="container">
                 <div class="center">
@@ -70,7 +70,7 @@
                     style="width: 100%"
                     
                   >
-                    <% if(link.advertisement.display == 'image') { %>
+                    <% if(campaign.advertisement.display == 'image') { %>
 
                       <a
                         href={item.link}
@@ -79,37 +79,37 @@
                       >
                         <img
                           class="card-img-top"
-                          src="<%= link.advertisement.attachment %>"
+                          src="<%= campaign.advertisement.attachment %>"
                           height="420px"
                           alt="Card image cap"
                         >
                       </a>
                     <% } %>
-                    <% if(link.advertisement.display == 'title') { %>
+                    <% if(campaign.advertisement.display == 'title') { %>
                       <a
-                        href="<%= link.advertisement.link %>"
+                        href="<%= campaign.advertisement.link %>"
                         target="blank"
                         style="text-decoration: none; color: black" }}
                       >
                         <div class="card-body">
                             <h3 class="card-title text-center">
-                              <%= link.advertisement.title %>
+                              <%= campaign.advertisement.title %>
                             </h3>
                         </div>
                       </a>
                     <% } %>
         
-                    <% if(link.advertisement.display == 'both') { %>
+                    <% if(campaign.advertisement.display == 'both') { %>
                       <div class="card-body">
                         <a
-                          href="<%= link.advertisement.link %>"
+                          href="<%= campaign.advertisement.link %>"
                           target="blank"
                           style="text-decoration: none; color: black" }}
                         >
-                          <h3 class="card-title text-center"><%= link.advertisement.title %></h3>
+                          <h3 class="card-title text-center"><%= campaign.advertisement.title %></h3>
                           <img
                             class="card-img-top"
-                            src="<%= link.advertisement.attachment %>"
+                            src="<%= campaign.advertisement.attachment %>"
                             height="400px"
                             alt="Card image cap"
                           >
@@ -125,7 +125,7 @@
               </div>
         <% } %>
       </div>
-      <% if (!link.advertisement) { %>
+      <% if (!campaign.advertisement) { %>
       <footer
         class="footer"
         style="
@@ -152,7 +152,7 @@
       </footer>
       <% } %>
       
-      <% if (link.advertisement && link.advertisement.subscription.plan.title=='Cause') { %>
+      <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause') { %>
         <footer
         class="footer"
         style="
