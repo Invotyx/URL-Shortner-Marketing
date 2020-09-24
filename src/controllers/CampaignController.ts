@@ -33,7 +33,7 @@ export const create = async (req: Request, res: Response) => {
       var metaData = await urlMetadata(url);
   }catch(ex){
     res.status(500).json({
-        success: false,
+      success: false,
       message: 'Destination Url is invalid!',
       data: { error },
     })
@@ -59,7 +59,7 @@ export const create = async (req: Request, res: Response) => {
       return res.status(200).send({
         success: true,
         message: '',
-        data: { link:campaign },
+        data: { campaign },
       });
     } catch (error) {
       return res.status(500).json({
@@ -123,7 +123,7 @@ export const update = async (req: Request, res: Response) => {
     return res.status(200).send({
       success: true,
       message: 'Link updated successfully',
-      data: { link: result },
+      data: { campaign: result },
     });
   } catch (error) {
     return res.status(500).json({
@@ -157,7 +157,7 @@ export const get = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: true,
       message: '',
-      data: { link:campaign },
+      data: { campaign },
     });
   }
 };
@@ -182,7 +182,7 @@ export const getUserCampaigns = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: '',
-      data: { links:campaigns },
+      data: { campaigns },
     });
   }
 };
@@ -218,7 +218,7 @@ export const remove = async (req: Request, res: Response) => {
     if (campaign.affected) {
       return res.status(200).send({
         success: true,
-        message: 'link deleted successfully',
+        message: 'Link deleted successfully',
         data: {},
       });
     } else {
@@ -273,7 +273,7 @@ export const view = async (req: Request, res: Response) => {
         campaign.advertisement = null;
       }
     }
-    res.render('pages/index',{link:campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
+    res.render('pages/index',{campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
   }
 };
 
@@ -345,7 +345,7 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: '',
-      data: { links:campaigns },
+      data: { campaigns },
     });
   }
 };
@@ -374,7 +374,7 @@ export const getStatistics = async(req: Request, res: Response) => {
       return res.status(200).json({
         success:true,
         message: "",
-        data: {links:campaigns}
+        data: {campaigns}
       })
     }catch(error){
       res.status(500).json({
