@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { getRepository, MoreThan } from "typeorm";
 import * as Joi from "joi";
-
+import * as fs from 'fs';
 import { Plan } from "../entity/Plan";
 import { Subscription } from "../entity/Subscription";
+import * as path from 'path';
+
 
 export const get = async (req: Request, res: Response) => {
     const user = req['user'];
@@ -104,6 +106,28 @@ export const create = async (req: Request, res: Response) => {
               });
         }
     }
+}
+
+export const android_subscription_updates = async (req: Request, res: Response) => {
+    let filePath = path.join(__dirname, '..' ,'..', 'public', 'android.json');
+    console.log(req.body);
+
+    await fs.writeFile(filePath, JSON.stringify(req.body), function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+        res.end();
+    });
+   
+}
+export const ios_subscription_updates = async (req: Request, res: Response) => {
+    let filePath = path.join(__dirname, '..' ,'..', 'public', 'ios.json');
+    console.log(req.body);
+
+    await fs.writeFile(filePath, JSON.stringify(req.body), function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+        res.end();
+    });
 }
 
 const validateSubscription = (subscription) => {

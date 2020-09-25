@@ -8,6 +8,8 @@ const router = Router();
 //Login route
 router.get("/get", [checkJwt], Subcription.get);
 router.post("/create", [checkJwt], Subcription.create);
+router.post("/ios_subscription_updates", Subcription.ios_subscription_updates);
+router.post("/android_subscription_updates", Subcription.android_subscription_updates);
 
 
 export default router;
