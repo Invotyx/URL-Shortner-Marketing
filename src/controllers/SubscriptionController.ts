@@ -112,7 +112,7 @@ export const android_subscription_updates = async (req: Request, res: Response) 
     let filePath = path.join(__dirname, '..' ,'..', 'public', 'android.json');
     console.log(req.body);
 
-    await fs.writeFile(filePath, JSON.stringify(req.body), function (err) {
+    await fs.appendFile(filePath, JSON.stringify(req.body), function (err) {
         if (err) throw err;
         console.log('Saved!');
         res.end();
@@ -123,7 +123,7 @@ export const ios_subscription_updates = async (req: Request, res: Response) => {
     let filePath = path.join(__dirname, '..' ,'..', 'public', 'ios.json');
     console.log(req.body);
 
-    await fs.writeFile(filePath, JSON.stringify(req.body), function (err) {
+    await fs.appendFile(filePath, JSON.stringify(req.body), function (err) {
         if (err) throw err;
         console.log('Saved!');
         res.end();
