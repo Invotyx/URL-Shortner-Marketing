@@ -24,6 +24,7 @@ createConnection()
 
     // Call midlewares
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
     app.use(morgan('combined'));
     app.use(cors());
     app.use(express.static('public'));
