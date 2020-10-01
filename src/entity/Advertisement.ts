@@ -50,6 +50,12 @@ import {User} from './User';
     @Column({default: 0})
     is_default: boolean;
 
+    @Column({ nullable:true })
+    width:number
+
+    @Column({ nullable:true })
+    height:number
+    
     @Column()
     @CreateDateColumn()
     created_at: Date;

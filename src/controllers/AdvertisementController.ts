@@ -5,6 +5,8 @@ import * as Joi from "joi";
 import { Advertisement } from "../entity/Advertisement";
 import { User } from "../entity/User";
 import { Campaign } from "../entity/Campaign";
+var probe = require('probe-image-size');
+
 
 interface MulterRequest extends Request {
     file: any;
@@ -52,14 +54,24 @@ export const create = async (req: Request , res: Response) => {
     const {title, description, link, display} = req.body;
     try{
     // CREATE AD
-
+        // var dimensions = sizeOf(_file.location, );
+        var width;
+        var height
+        await probe(_file.location).then(result => {
+            width = result.width
+            height = result.height
+        
+        });
         let advertisement = new Advertisement();
         advertisement.title = title;
         advertisement.description = description;
         advertisement.attachment = _file.location;
         advertisement.link = link;
         advertisement.display = display;
-        advertisement.user = user
+        advertisement.user = user;
+        advertisement.width=width;
+        advertisement.height=height;
+
 
         await advertisementRepository.save(advertisement);
         return res.status(200).send({
@@ -108,6 +120,18 @@ export const update = async (req: Request, res: Response) => {
     const description = req.body.description || ad_exists.description;
     const link = req.body.link || ad_exists.link;
     const attachment = _file ? _file.location : ad_exists.attachment;
+    var width = null;
+    var height = null;
+    if(_file){
+        await probe(_file.location).then(result => {
+            width = result.width
+            height = result.height
+        
+        });
+    }else{
+        width = ad_exists.width;
+        height = ad_exists.height;  
+    }
     const display = req.body.display || ad_exists.display;
     let is_default = req.body.is_default || ad_exists.is_default;
     is_default = (is_default == '1' );
@@ -116,7 +140,7 @@ export const update = async (req: Request, res: Response) => {
         const advertisement = await getRepository(Advertisement)
         .createQueryBuilder()
         .update(Advertisement)
-        .set({ title, description, attachment, link, display, is_default })
+        .set({ title, description, attachment, link, display, is_default, width, height })
         .where("id = :id", { id })
         .execute();
 
