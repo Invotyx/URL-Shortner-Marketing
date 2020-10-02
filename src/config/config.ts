@@ -6,5 +6,5 @@ export default {
   region: 'us-east-2',
   APP_NAME: 'Shurly',
   REDIRECT_TIME: 5000,
-  REDIRECT: true,
+  REDIRECT: false,
 };

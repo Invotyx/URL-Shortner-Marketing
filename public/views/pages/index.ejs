@@ -3,13 +3,6 @@
 <head>
     <title>Shurly - Promote What You Support</title>
 
-    <link
-    rel="stylesheet"
-    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-    crossorigin="anonymous"
-    />
-    <link href="assets/css/style-redirect.css" rel="stylesheet">
     <!-- <link rel="icon" href="<%= campaign.meta_image %>" /> -->
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
 
@@ -32,136 +25,61 @@
     <meta property="twitter:description" content="<%= campaign.meta_description %>">
     <meta property="twitter:image" content="<%= campaign.meta_image %>">
   
+    <link href="assets/css/style-redirect.css" rel="stylesheet">
     <script src="assets/js/script-redirect.js"></script>
-  <style>
-    #preloader {
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 99999;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      background-image: url(assets/img/preloader.gif);
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-color: #fff;
-  }
-  </style>
 </head>
 <body>
-  <input type="hidden" name="redirect" class="redirect" value="<%=config.redirect%>">
-  <input type="hidden" name="time" class="time" value="<%=config.time%>">
-  <input type="hidden" name="url" class="url" value="<%=campaign.destination_url%>">
-  <input type="hidden" name="campaign" class="campaign" value="<%=campaign.id%>">
   <div id="loader" class="loader"></div>
-    <div
-        class="col-sm-12 "
-        style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-          "
-        >
-        <!-- TODO 404 page if campaign not found -->
-            <% if (campaign.advertisement) { %>
-  
-            <div class="container">
-                <Center>
-                  <div
-                    class="card row"
-                    style="width: 100%"
-                    
-                  >
-                    <% if(campaign.advertisement.display == 'image') { %>
+    
+  <% if (campaign.advertisement) { %>
 
-                      <a
-                        href={item.link}
-                        target="blank"
-                        style="text-decoration: none; color: black" }}
-                      >
-                      <img class="main-image" id="main-image" onload="resizeImg(this);" src="https://s3.us-east-2.amazonaws.com/shurly.app/uploads/10_1601020219956_vgrHCU.jpg"></img>
-                      </a>
-                    <% } %>
-                    <% if(campaign.advertisement.display == 'title') { %>
-                      <a
-                        href="<%= campaign.advertisement.link %>"
-                        target="blank"
-                        style="text-decoration: none; color: black" }}
-                      >
-                        <div class="card-body">
-                            <h3 class="card-title text-center">
-                              <%= campaign.advertisement.title %>
-                            </h3>
-                        </div>
-                      </a>
-                    <% } %>
-        
-                    <% if(campaign.advertisement.display == 'both') { %>
-                      <div class="card-body">
-                        <a
-                          href="<%= campaign.advertisement.link %>"
-                          target="blank"
-                          style="text-decoration: none; color: black" }}
-                        >
-                          <h3 class="card-title text-center"><%= campaign.advertisement.title %></h3>
-                          <img
-                            class="card-img-top"
-                            src="<%= campaign.advertisement.attachment %>"
-                            height="400px"
-                            alt="Card image cap"
-                          >
-                        </a>
-                      </div>
-                    <% } %>
-                  </div>
-                </Center>
-              </div>
-            <% }else{ %>
-              <div class="">
-                <div class="card" style="width:50rem"></div>
-              </div>
-            <% } %>
-      </div>
-      <% if (!campaign.advertisement) { %>
-        <div class="footer">
-          <a href="https://shurly.app"> Powered by ShurLy.App </a>
-        </div>
-      <% } %>
-      
-      <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause') { %>
-        <div class="footer">
-          <a href="https://shurly.app"> Powered by ShurLy.App </a>
-        </div>
-      <% } %>
+  <div class="container">
+    <Center>
+      <a
+        href="<%=campaign.advertisement.link%>"
+        target="blank"
+      >
+      <img class="main-image" 
+        id="main-image" 
+        onload="resizeImg(this)"
+        width="<%=campaign.advertisement.width%>" 
+        height="<%=campaign.advertisement.height%>" 
+        src="<%=campaign.advertisement.attachment%>"></img>
+      </a>
+    
+    </Center>
+  </div>
+  <% }else{ %>
+    <div class="">
     </div>
+  <% } %>
+
+
+  <div class="footer">
+    <a href="https://shurly.app"> Powered by ShurLy.App </a>
+  </div>
 </body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script type='text/javascript'>
-  $(function(){
-    const redirect = $('.redirect').val()
-    const time = $('.time').val()
-    const campaign = $('.campaign').val()
-    const url = $('.url').val()
-    
-    if(redirect == 'true'){
-      setTimeout(() => {
-        // window.location = url;
-      }, time);
-    }
-    $(window).on( 'load', function(){
-      $('#preloader').delay(300).fadeOut('slow',function(){
-        $(this).remove();
-      });    
-    }); 
-    $.ajax({
-      url: '/api/campaign/update-view/'+campaign,
-      success: function(data){
-        console.log(data)
-      },
-    });
-  });
+
+  window.onload = (event) => {
+  //   img = $(".main-image");
+  //   resizeImg(img);
+  var loader = document.getElementById("loader");
+  loader.style.width = "100%";
+
+  var update_views_url = "/api/campaign/update-view/"+"<%=campaign.id%>";
+    fetch(update_views_url).then();
+
+  const redirect = "<%=config.redirect%>"
+  const time = "<%=config.time%>"
+  const url = "<%=campaign.destination_url%>"
+  
+  if(redirect == 'true'){
+    setTimeout(() => {
+      window.location = url;
+    }, time);
+  }
+};
 </script>
 </html>
