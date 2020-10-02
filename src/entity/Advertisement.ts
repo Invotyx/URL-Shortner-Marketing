@@ -50,10 +50,10 @@ import {User} from './User';
     @Column({default: 0})
     is_default: boolean;
 
-    @Column({ nullable:true })
+    @Column({ default:1920 })
     width:number
-
-    @Column({ nullable:true })
+    
+    @Column({ default:1080 })
     height:number
     
     @Column()
