@@ -154,7 +154,7 @@ export const get = async (req: Request, res: Response) => {
       data: {},
     });
   } else {
-    return res.status(500).json({
+    return res.status(200).json({
       success: true,
       message: '',
       data: { campaign },
