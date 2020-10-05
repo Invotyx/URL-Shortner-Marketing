@@ -127,9 +127,16 @@
     <div class=""></div>
     <% } %>
 
-    <div class="footer">
-      <a href="https://shurly.app"> Powered by ShurLy.App </a>
-    </div>
+    <% if (!campaign.advertisement) { %>
+      <div class="footer">
+        <a href="https://shurly.app"> Powered by ShurLy.App </a>
+      </div>
+    <% } %>
+    <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause') { %>
+      <div class="footer">
+        <a href="https://shurly.app"> Powered by ShurLy.App </a>
+      </div>
+    <% } %>
   </body>
 
   <script type="text/javascript">
