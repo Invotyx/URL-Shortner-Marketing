@@ -93,8 +93,24 @@
       }
 
       .footer a {
+        font-size: 1rem;
         color: #815cf7;
         text-decoration: none;
+      }
+      @media only screen and (max-device-width: 580px) {
+        .footer a {
+          font-size:1.6rem;
+        }
+      }
+      @media only screen and (max-device-width: 480px) {
+        .footer a {
+          font-size:2rem;
+        }
+      }
+      @media only screen and (max-device-width: 380px) {
+        .footer a {
+          font-size:2.4rem;
+        }
       }
     </style>
     <script
@@ -152,7 +168,7 @@
       const url = '<%=campaign.destination_url%>';
 
       /*  Make Redirection    */
-      if (redirect == 'true') {
+      if (redirect != 'true') {
         /* time out for loader just 1000ms before redirection */
         setTimeout(() => {
           var loader = document.getElementById('loader');
@@ -174,10 +190,12 @@
       var image = document.getElementById('display-image');
 
       if (imageWidth > imageHeight) {
+
         if (imageWidth > windowWidth) {
           image.style.width = windowWidth + 'px';
         } else {
           image.style.width = imageWidth + 'px';
+          image.style.marginLeft = (windowWidth-imageWidth)/2 + 'px'          
         }
         imageBox.classList.add('vertical-center');
       } else {
@@ -185,6 +203,7 @@
           image.style.height = windowHeight + 'px';
         } else {
           image.style.height = imageHeight + 'px';
+          image.style.marginTop = (windowHeight-imageHeight)/2 + 'px' 
         }
         imageBox.classList.add('horizontal-center');
       }
