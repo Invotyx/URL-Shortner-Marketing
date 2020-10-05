@@ -168,7 +168,7 @@
       const url = '<%=campaign.destination_url%>';
 
       /*  Make Redirection    */
-      if (redirect != 'true') {
+      if (redirect == 'true') {
         /* time out for loader just 1000ms before redirection */
         setTimeout(() => {
           var loader = document.getElementById('loader');
