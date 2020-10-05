@@ -156,8 +156,8 @@
   })();
 
   function resizeImage() {
-    let imageWidth = parseFloat("{{$data->campaign->advertisement->width}}");
-    let imageHeight = parseFloat("{{$data->campaign->advertisement->height}}");
+    let imageWidth = parseFloat("<%=campaign.advertisement.width%>");
+    let imageHeight = parseFloat("<%=campaign.advertisement.height%>");
     let windowWidth= parseFloat( window.innerWidth );
     let windowHeight = parseFloat( window.innerHeight );
     
