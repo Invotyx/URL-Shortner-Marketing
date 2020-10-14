@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { getRepository, Between } from 'typeorm';
 import * as Joi from 'joi';
-const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
 import config from '../config/config';
 import { Campaign } from '../entity/Campaign';
