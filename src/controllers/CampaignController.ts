@@ -3,10 +3,31 @@ import { getRepository, Between } from 'typeorm';
 import * as Joi from 'joi';
 const urlMetadata = require('url-metadata');
 var randomize = require('randomatic');
-import config from '../config/config'
+import config from '../config/config';
 import { Campaign } from '../entity/Campaign';
 import { CampaignView } from '../entity/CampaignView';
 import { Advertisement } from '../entity/Advertisement';
+
+const axios = require('axios');
+const { getMetadata } = require('page-metadata-parser');
+const domino = require('domino');
+
+interface MetaData {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+async function fetchUrlMetadata(url: string): Promise<MetaData> {
+  try {
+    const response = await axios(url);
+    const doc = domino.createWindow(response.data).document;
+    return getMetadata(doc, url);
+  } catch (error) {
+    console.error('Error fetching metadata', error);
+    return {};
+  }
+}
 
 export const create = async (req: Request, res: Response) => {
   const user = req['user'];
@@ -29,46 +50,37 @@ export const create = async (req: Request, res: Response) => {
       });
   }
   const url = req.body.destination_url;
-  try{
-      var metaData = await urlMetadata(url);
-  }catch(ex){
-    res.status(500).json({
-      success: false,
-      message: 'Destination Url is invalid!',
-      data: { error },
-    })
-  }
-  
-    const { title, destination_url } = req.body;
-    try {
-      // CREATE Campaign
+  const metaData = await fetchUrlMetadata(url);
 
-      let campaign = new Campaign();
-      campaign.title = metaData.title;
-      campaign.meta_title = metaData.title;
-      campaign.meta_description = metaData.description;
-      campaign.meta_image = metaData.image;
-      campaign.internal_url = await campaign.getInternalID();
-      campaign.destination_url = destination_url;
-      if (req.body.advertisement_id) {
-        campaign.advertisement = advertisement;
-      }
-      campaign.user = user;
+  const { title, destination_url } = req.body;
+  try {
+    // CREATE Campaign
 
-      await getRepository(Campaign).save(campaign);
-      return res.status(200).send({
-        success: true,
-        message: '',
-        data: { campaign },
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: 'Something went wrong!',
-        data: { error },
-      });
+    let campaign = new Campaign();
+    campaign.title = metaData.title;
+    campaign.meta_title = metaData.title;
+    campaign.meta_description = metaData.description;
+    campaign.meta_image = metaData.image;
+    campaign.internal_url = await campaign.getInternalID();
+    campaign.destination_url = destination_url;
+    if (req.body.advertisement_id) {
+      campaign.advertisement = advertisement;
     }
-  
+    campaign.user = user;
+
+    await getRepository(Campaign).save(campaign);
+    return res.status(200).send({
+      success: true,
+      message: '',
+      data: { campaign },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong!',
+      data: { error },
+    });
+  }
 };
 
 export const update = async (req: Request, res: Response) => {
@@ -108,12 +120,12 @@ export const update = async (req: Request, res: Response) => {
   }
   if (req.body.destination_url) {
     const url = req.body.destination_url;
-    var metaData = await urlMetadata(url);
+    var metaData = await fetchUrlMetadata(url);
   }
   try {
     campaignRepository.merge(campaign, {
       ...req.body,
-      title:metaData.title,
+      title: metaData.title,
       advertisement: advertisement,
       meta_description: metaData.description,
       meta_title: metaData.title,
@@ -170,7 +182,7 @@ export const getUserCampaigns = async (req: Request, res: Response) => {
       user: user,
       deleted_at: null,
     },
-    relations:['advertisement']
+    relations: ['advertisement'],
   });
   if (!campaigns) {
     return res.status(500).json({
@@ -237,7 +249,6 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 
-
 export const view = async (req: Request, res: Response) => {
   const internal_url = req.params.id;
 
@@ -250,59 +261,62 @@ export const view = async (req: Request, res: Response) => {
     relations: ['advertisement'],
   });
   if (!campaign) {
-    res.render('pages/404',{campaign:{}});
-    
+    res.render('pages/404', { campaign: {} });
   } else {
-      
-    if(campaign.advertisement ){
+    if (campaign.advertisement) {
       var advertisement = await getRepository(Advertisement).findOne({
-        where:{
-          id:campaign.advertisement.id,
-          deleted_at:null
+        where: {
+          id: campaign.advertisement.id,
+          deleted_at: null,
         },
-        relations:['user']
-      })
+        relations: ['user'],
+      });
 
-      if(advertisement){
+      if (advertisement) {
         const user = advertisement.user;
         const subscription = await user.getCurrentSubscriptionPlan();
         advertisement['subscription'] = subscription;
         advertisement.user = null;
         campaign.advertisement = advertisement;
-      }else{
+      } else {
         campaign.advertisement = null;
       }
     }
-    res.render('pages/index',{campaign, config:{time:config.REDIRECT_TIME,redirect:config.REDIRECT} });
+    res.render('pages/index', {
+      campaign,
+      config: { time: config.REDIRECT_TIME, redirect: config.REDIRECT },
+    });
   }
 };
 
 export const incrementViewCount = async (req: Request, res: Response) => {
   const campaign_id = req.params.id;
   const campaignRepository = getRepository(Campaign);
-  try{
+  try {
     var campaign = await campaignRepository.findOne({
       where: {
-        id:campaign_id,
+        id: campaign_id,
         deleted_at: null,
       },
       relations: ['advertisement'],
     });
-    if(campaign){
+    if (campaign) {
       campaign.views++;
       const result = await campaignRepository.save(campaign);
       const campaign_view = new CampaignView();
-      if(result.advertisement ){
+      if (result.advertisement) {
         var advertisement = await getRepository(Advertisement).findOne({
-          where:{
-            id:result.advertisement.id,
-            deleted_at:null
+          where: {
+            id: result.advertisement.id,
+            deleted_at: null,
           },
-          relations:['user']
-        })
-        if(advertisement){
+          relations: ['user'],
+        });
+        if (advertisement) {
           advertisement.views++;
-          advertisement = await getRepository(Advertisement).save(advertisement);
+          advertisement = await getRepository(Advertisement).save(
+            advertisement,
+          );
           const user = advertisement.user;
           const subscription = await user.getCurrentSubscriptionPlan();
           advertisement['subscription'] = subscription;
@@ -313,21 +327,21 @@ export const incrementViewCount = async (req: Request, res: Response) => {
           campaign_view.campaign = campaign;
           await getRepository(CampaignView).save(campaign_view);
           return res.status(200).json({
-            success:true,
-            message:"View updated Successfully",
-            data:{}
-          })
+            success: true,
+            message: 'View updated Successfully',
+            data: {},
+          });
         }
       }
     }
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({
-      success:false,
-      message:"Something went wrong",
-      data:{}
-    })
+      success: false,
+      message: 'Something went wrong',
+      data: {},
+    });
   }
-}
+};
 export const getAllCampaigns = async (req: Request, res: Response) => {
   const campaignRepository = getRepository(Campaign);
   const campaigns = await campaignRepository.find({
@@ -349,48 +363,46 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
     });
   }
 };
-export const getStatistics = async(req: Request, res: Response) => {
+export const getStatistics = async (req: Request, res: Response) => {
   const { error } = validateStatsRequest(req.query);
-  
+
   if (error)
     return res.status(400).json({
       success: false,
       message: error.details[0].message,
       data: {},
     });
-    try{
-      const campaign = await getRepository(Campaign).findOne(req.params.id);
-      if(!campaign) return res.status(400).json({
+  try {
+    const campaign = await getRepository(Campaign).findOne(req.params.id);
+    if (!campaign)
+      return res.status(400).json({
         success: false,
         message: 'Campign with this id not found',
         data: {},
-        });
-      let starts_at = <any>req.query.starts_at;
-      let ends_at = <any>req.query.ends_at;
-      starts_at = new Date(starts_at).toISOString()
-        .split('T')[0];
-      ends_at = new Date(ends_at).toISOString()
-        .split('T')[0];
-      const campaigns = await getRepository(CampaignView).find({
-        where:{
-          campaign: campaign,
-          created_at: Between(starts_at, ends_at),
-        },
       });
-      return res.status(200).json({
-        success:true,
-        message: "",
-        data: {campaigns}
-      })
-    }catch(error){
-      res.status(500).json({
-        success:false,
-        message: "Something went wrong",
-        data: {error}
-      })
-    }
-  
-} 
+    let starts_at = <any>req.query.starts_at;
+    let ends_at = <any>req.query.ends_at;
+    starts_at = new Date(starts_at).toISOString().split('T')[0];
+    ends_at = new Date(ends_at).toISOString().split('T')[0];
+    const campaigns = await getRepository(CampaignView).find({
+      where: {
+        campaign: campaign,
+        created_at: Between(starts_at, ends_at),
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      message: '',
+      data: { campaigns },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong',
+      data: { error },
+    });
+  }
+};
 
 const validateCampaign = (campaign) => {
   const schema = Joi.object({
@@ -416,4 +428,4 @@ const validateStatsRequest = (campaign) => {
     ends_at: Joi.date().required(),
   });
   return schema.validate(campaign);
-}
+};
