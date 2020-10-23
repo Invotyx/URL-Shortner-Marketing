@@ -35,7 +35,7 @@ import {
     @Column()
     title: string;
   
-    @Column()
+    @Column({length: 511})
     destination_url: string;
 
     @Column({length:6})
