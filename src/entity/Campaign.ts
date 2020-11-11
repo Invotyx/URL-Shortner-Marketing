@@ -50,7 +50,7 @@ export class Campaign {
   @Column({ type: 'text', nullable: true })
   meta_description: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 511 })
   meta_image: string;
 
   @Column()

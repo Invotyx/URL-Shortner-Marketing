@@ -41,7 +41,7 @@ services:
       - TYPEORM_PASSWORD=shurly_app
       - TYPEORM_DATABASE=shurly_app
       - TYPEORM_PORT=3306
-      - TYPEORM_SYNCHRONIZE=true
+      - TYPEORM_SYNCHRONIZE=false
       - TYPEORM_MIGRATIONS_RUN=true
       - TYPEORM_LOGGING=false
       - TYPEORM_ENTITIES=build/entity/**/*.js
