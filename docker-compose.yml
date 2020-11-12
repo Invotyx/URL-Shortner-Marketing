@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mysql:
-    image: 'mariadb:latest'
+    image: mariadb:10.5.8
     container_name: mysql
     networks:
       - shurly_app
@@ -16,7 +16,7 @@ services:
       - MYSQL_DATABASE=shurly_app
 
   adminer:
-    image: adminer
+    image: adminer:4.7.7
     container_name: adminer
     depends_on:
       - mysql
@@ -25,7 +25,7 @@ services:
     restart: always
 
   shurly_api:
-    image: 'docker.pkg.github.com/invotyx/shurly_app/api_shurly_app:latest'
+    image: docker.pkg.github.com/invotyx/shurly_app/api_shurly_app:v1.0.0
     container_name: shurly_api
     depends_on:
       - mysql
@@ -49,7 +49,7 @@ services:
       - PORT=3000
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.19.4
     container_name: nginx
     depends_on:
       - shurly_api
