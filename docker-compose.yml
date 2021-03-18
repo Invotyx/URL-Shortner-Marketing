@@ -83,3 +83,8 @@ networks:
   shurly_app:
     name: shurly_app
     driver: bridge
+
+volumes:
+  public_html:
+    name: public_html
+    driver: local
