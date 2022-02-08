@@ -9,6 +9,12 @@ import { SocialLoginModule } from './social-login/social-login.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { UserDeviceModule } from './user-device/user-device.module';
 import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
+import { CapaignsModule } from './capaigns/capaigns.module';
+import { PlansModule } from './plans/plans.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { UserDevicesModule } from './user-devices/user-devices.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +26,12 @@ import { UserModule } from './user/user.module';
     AdvertisementsModule,
     CampaignViewModule,
     PlanModule,
+    UsersModule,
+    CapaignsModule,
+    PlansModule,
+    SubscriptionsModule,
+    UserDevicesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
