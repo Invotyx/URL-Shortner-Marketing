@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, getRepository } from "typeorm";
+import { getRepository, MigrationInterface, QueryRunner } from "typeorm";
 import { Plan } from "../entity/Plan";
 
 export class CreatePlans1605095792799 implements MigrationInterface {
@@ -19,7 +19,7 @@ export class CreatePlans1605095792799 implements MigrationInterface {
     plan2.title = "Business";
     plan2.slug = "enterprise";
     plan2.limit = 3;
-    plan2.rate = 3.99;
+    plan2.rate = 3;
     await planRepository.save(plan2);
 
     let plan3 = new Plan();
@@ -28,7 +28,7 @@ export class CreatePlans1605095792799 implements MigrationInterface {
     plan3.title = "Agency";
     plan3.slug = "agency";
     plan3.limit = 10;
-    plan3.rate = 7.99;
+    plan3.rate = 7;
     await planRepository.save(plan3);
   }
 

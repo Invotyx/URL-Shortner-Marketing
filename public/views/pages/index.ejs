@@ -1,138 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Shurly - Promote What You Support</title>
 
-    <!-- <link rel="icon" href="<%= campaign.meta_image %>" /> -->
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="assets/img/favicon.png"
-    />
+<head>
+  <meta charset="utf-8" />
+  <title>Shurly - Promote What You Support</title>
 
-    <meta name="title" content="<%= campaign.meta_title %>" />
-    <meta name="description" content="<%= campaign.description %>" />
-    <meta name="image" content="<%= campaign.meta_image %>" />
-    <meta property="url" content="<%= campaign.destination_url %>" />
+  <!-- <link rel="icon" href="<%= campaign.meta_image %>" /> -->
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png" />
 
-    <meta property="title" content="<%= campaign.meta_title %>" />
-    <meta property="description" content="<%= campaign.description %>" />
-    <meta property="image" content="<%= campaign.meta_image %>" />
+  <meta name="title" content="<%= campaign.meta_title %>" />
+  <meta name="description" content="<%= campaign.description %>" />
+  <meta name="image" content="<%= campaign.meta_image %>" />
+  <meta property="url" content="<%= campaign.destination_url %>" />
 
-    <!-- Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="<%= campaign.meta_title %>" />
-    <meta
-      property="og:description"
-      content="<%= campaign.meta_description %>"
-    />
-    <meta property="og:image" content="<%= campaign.meta_image %>" />
-    <!-- <meta property="og:url" content="<%= campaign.destination_url %>"> -->
+  <meta property="title" content="<%= campaign.meta_title %>" />
+  <meta property="description" content="<%= campaign.description %>" />
+  <meta property="image" content="<%= campaign.meta_image %>" />
 
-    <!-- Twitter -->
-    <meta property="twitter:title" content="<%= campaign.meta_title %>" />
-    <meta
-      property="twitter:description"
-      content="<%= campaign.meta_description %>"
-    />
-    <meta property="twitter:image" content="<%= campaign.meta_image %>" />
-    <!-- <meta property="twitter:url" content="<%= campaign.destination_url %>"> -->
+  <!-- Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="<%= campaign.meta_title %>" />
+  <meta property="og:description" content="<%= campaign.meta_description %>" />
+  <meta property="og:image" content="<%= campaign.meta_image %>" />
+  <!-- <meta property="og:url" content="<%= campaign.destination_url %>"> -->
 
-    <style>
-      @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+  <!-- Twitter -->
+  <meta property="twitter:title" content="<%= campaign.meta_title %>" />
+  <meta property="twitter:description" content="<%= campaign.meta_description %>" />
+  <meta property="twitter:image" content="<%= campaign.meta_image %>" />
+  <!-- <meta property="twitter:url" content="<%= campaign.destination_url %>"> -->
 
-      html {
-        width: 100%;
-        height: 100%;
-      }
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
 
-      body {
-        font-size: 15px;
-        line-height: 1.7;
-        font-family: 'Roboto', sans-serif;
-        color: #815cf7;
-        background-color: #000000;
-        overflow: hidden;
-        padding: 0px;
-        margin: 0px;
-        vertical-align: middle;
-      }
+    html {
+      width: 100%;
+      height: 100%;
+    }
 
-      .vertical-center {
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        -ms-transform: translateY(-50%);
-        transform: translateY(-50%);
-      }
+    body {
+      font-size: 15px;
+      line-height: 1.7;
+      font-family: 'Roboto', sans-serif;
+      color: #815cf7;
+      background-color: #000000;
+      overflow: hidden;
+      padding: 0px;
+      margin: 0px;
+      vertical-align: middle;
+    }
 
-      .horizontal-center {
-        display: flex;
-        justify-content: center;
-        text-align: center;
-      }
+    .vertical-center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
 
-      .loader {
-        z-index: 1000;
-        position: absolute;
-        top: 0px;
-        height: 5px;
-        width: 1%;
-        background-color: #815cf7;
-        transition: width <%=config.time/1000%>s;
-      }
+    .horizontal-center {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+    }
 
-      .footer {
-        z-index: 1000;
-        position: absolute;
-        bottom: 20px;
-        right: 0;
-        font-family: algerian, courier;
-        line-height: 80%;
-      }
+    .loader {
+      z-index: 1000;
+      position: absolute;
+      top: 0px;
+      height: 5px;
+      width: 1%;
+      background-color: #815cf7;
+      transition: width
+    }
 
+    .footer {
+      z-index: 1000;
+      position: absolute;
+      bottom: 20px;
+      right: 0;
+      font-family: algerian, courier;
+      line-height: 80%;
+    }
+
+    .footer a {
+      font-size: 1rem;
+      color: #815cf7;
+      text-decoration: none;
+    }
+
+    @media only screen and (max-device-width: 580px) {
       .footer a {
-        font-size: 1rem;
-        color: #815cf7;
-        text-decoration: none;
+        font-size: 1.6rem;
       }
-      @media only screen and (max-device-width: 580px) {
-        .footer a {
-          font-size:1.6rem;
-        }
-      }
-      @media only screen and (max-device-width: 480px) {
-        .footer a {
-          font-size:2rem;
-        }
-      }
-      @media only screen and (max-device-width: 380px) {
-        .footer a {
-          font-size:2.4rem;
-        }
-      }
-    </style>
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-178104038-1"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
+    }
 
-      gtag('config', 'UA-178104038-1');
-    </script>
-  </head>
-  <body>
-    <!-- loader starts-->
-    <div id="loader" class="loader"></div>
-    <!-- loader ends -->
+    @media only screen and (max-device-width: 480px) {
+      .footer a {
+        font-size: 2rem;
+      }
+    }
 
-    <% if (campaign.advertisement) { %>
+    @media only screen and (max-device-width: 380px) {
+      .footer a {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178104038-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-178104038-1');
+  </script>
+</head>
+
+<body>
+  <!-- loader starts-->
+  <div id="loader" class="loader"></div>
+  <!-- loader ends -->
+
+  <% if (campaign.advertisement) { %>
 
     <div class="image-box" id="image-box">
       <a href="<%=campaign.advertisement.link%>" target="blank">
@@ -140,73 +132,74 @@
       </a>
     </div>
     <% }else{ %>
-    <div class=""></div>
-    <% } %>
+      <div class=""></div>
+      <% } %>
 
-    <% if (!campaign.advertisement) { %>
-      <div class="footer">
-        <a href="https://shurly.app"> Powered by ShurLy.App </a>
-      </div>
-    <% } %>
-    <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause') { %>
-      <div class="footer">
-        <a href="https://shurly.app"> Powered by ShurLy.App </a>
-      </div>
-    <% } %>
-  </body>
+        <% if (!campaign.advertisement) { %>
+          <div class="footer">
+            <a href="https://shurly.app"> Powered by ShurLy.App </a>
+          </div>
+          <% } %>
+            <% if (campaign.advertisement && campaign.advertisement.subscription.plan.title=='Cause' ) { %>
+              <div class="footer">
+                <a href="https://shurly.app"> Powered by ShurLy.App </a>
+              </div>
+              <% } %>
+</body>
 
-  <script type="text/javascript">
-    (function () {
-      resizeImage();
+<script type="text/javascript">
+  (function () {
+    resizeImage();
 
-      /*  Campaign statistics update  */
-      var update_views_url = '/api/campaign/update-view/' + '<%=campaign.id%>';
-      fetch(update_views_url).then();
+    /*  Campaign statistics update  */
+    var update_views_url = '/api/campaign/update-view/' + '<%=campaign.id%>';
+    fetch(update_views_url).then();
 
-      const redirect = '<%=config.redirect%>';
-      const time = '<%=config.time%>';
-      const url = '<%=campaign.destination_url%>';
+    const redirect = '<%=config.redirect%>';
+    const time = '<%=config.time%>';
+    const url = '<%=campaign.destination_url%>';
 
-      /*  Make Redirection    */
-      if (redirect == 'true') {
-        /* time out for loader just 1000ms before redirection */
-        setTimeout(() => {
-          var loader = document.getElementById('loader');
-          loader.style.width = '100%';
-        }, 0);
-        setTimeout(() => {
-          window.location.href = url;
-        }, time);
-      }
-    })();
-
-    function resizeImage() {
-      let imageWidth = parseFloat('<%=campaign.advertisement.width%>');
-      let imageHeight = parseFloat('<%=campaign.advertisement.height%>');
-      let windowWidth = parseFloat(window.innerWidth);
-      let windowHeight = parseFloat(window.innerHeight);
-
-      var imageBox = document.getElementById('image-box');
-      var image = document.getElementById('display-image');
-
-      if (imageWidth > imageHeight) {
-
-        if (imageWidth > windowWidth) {
-          image.style.width = windowWidth + 'px';
-        } else {
-          image.style.width = imageWidth + 'px';
-          image.style.marginLeft = (windowWidth-imageWidth)/2 + 'px'          
-        }
-        imageBox.classList.add('vertical-center');
-      } else {
-        if (imageHeight > windowHeight) {
-          image.style.height = windowHeight + 'px';
-        } else {
-          image.style.height = imageHeight + 'px';
-          image.style.marginTop = (windowHeight-imageHeight)/2 + 'px' 
-        }
-        imageBox.classList.add('horizontal-center');
-      }
+    /*  Make Redirection    */
+    if (redirect == 'true') {
+      /* time out for loader just 1000ms before redirection */
+      setTimeout(() => {
+        var loader = document.getElementById('loader');
+        loader.style.width = '100%';
+      }, 0);
+      setTimeout(() => {
+        window.location.href = url;
+      }, time);
     }
-  </script>
+  })();
+
+  function resizeImage() {
+    let imageWidth = parseFloat('<%=campaign.advertisement.width%>');
+    let imageHeight = parseFloat('<%=campaign.advertisement.height%>');
+    let windowWidth = parseFloat(window.innerWidth);
+    let windowHeight = parseFloat(window.innerHeight);
+
+    var imageBox = document.getElementById('image-box');
+    var image = document.getElementById('display-image');
+
+    if (imageWidth > imageHeight) {
+
+      if (imageWidth > windowWidth) {
+        image.style.width = windowWidth + 'px';
+      } else {
+        image.style.width = imageWidth + 'px';
+        image.style.marginLeft = (windowWidth - imageWidth) / 2 + 'px'
+      }
+      imageBox.classList.add('vertical-center');
+    } else {
+      if (imageHeight > windowHeight) {
+        image.style.height = windowHeight + 'px';
+      } else {
+        image.style.height = imageHeight + 'px';
+        image.style.marginTop = (windowHeight - imageHeight) / 2 + 'px'
+      }
+      imageBox.classList.add('horizontal-center');
+    }
+  }
+</script>
+
 </html>

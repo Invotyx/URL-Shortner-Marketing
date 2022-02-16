@@ -1,15 +1,15 @@
-import { Request, Response } from 'express';
-import { getRepository, Between } from 'typeorm';
-import * as Joi from 'joi';
-var randomize = require('randomatic');
-import config from '../config/config';
-import { Campaign } from '../entity/Campaign';
-import { CampaignView } from '../entity/CampaignView';
-import { Advertisement } from '../entity/Advertisement';
+import { Request, Response } from "express";
+import * as Joi from "joi";
+import { Between, getRepository } from "typeorm";
+import config from "../config/config";
+import { Advertisement } from "../entity/Advertisement";
+import { Campaign } from "../entity/Campaign";
+import { CampaignView } from "../entity/CampaignView";
+var randomize = require("randomatic");
 
-const axios = require('axios');
-const { getMetadata } = require('page-metadata-parser');
-const domino = require('domino');
+const axios = require("axios");
+const { getMetadata } = require("page-metadata-parser");
+const domino = require("domino");
 
 interface MetaData {
   title?: string;
@@ -23,13 +23,13 @@ async function fetchUrlMetadata(url: string): Promise<MetaData> {
     const doc = domino.createWindow(response.data).document;
     return getMetadata(doc, url);
   } catch (error) {
-    console.error('Error fetching metadata', error);
+    console.error("Error fetching metadata", error);
     return {};
   }
 }
 
 export const create = async (req: Request, res: Response) => {
-  const user = req['user'];
+  const user = req["user"];
   const { error } = validateCampaign(req.body);
   if (error)
     return res.status(400).json({
@@ -39,12 +39,12 @@ export const create = async (req: Request, res: Response) => {
     });
   if (req.body.advertisement_id) {
     var advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
-      req.body.advertisement_id,
+      req.body.advertisement_id
     );
     if (!advertisement)
       return res.status(400).json({
         success: false,
-        message: 'Advertisement ID is invalid',
+        message: "Advertisement ID is invalid",
         data: {},
       });
   }
@@ -70,20 +70,20 @@ export const create = async (req: Request, res: Response) => {
     await getRepository(Campaign).save(campaign);
     return res.status(200).send({
       success: true,
-      message: '',
+      message: "",
       data: { campaign },
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong!',
+      message: "Something went wrong!",
       data: { error },
     });
   }
 };
 
 export const update = async (req: Request, res: Response) => {
-  const user = req['user'];
+  const user = req["user"];
   const campaignRepository = getRepository(Campaign);
 
   const campaign = await campaignRepository.findOne({
@@ -96,7 +96,7 @@ export const update = async (req: Request, res: Response) => {
   if (!campaign) {
     return res.status(400).json({
       success: false,
-      message: 'Link with current ID not found',
+      message: "Link with current ID not found",
       data: {},
     });
   }
@@ -108,12 +108,12 @@ export const update = async (req: Request, res: Response) => {
       .json({ success: false, message: error.details[0].message, data: {} });
   if (req.body.advertisement_id) {
     var advertisement = await user.checkIfAddIsInCurrentSubscriptionPlan(
-      req.body.advertisement_id,
+      req.body.advertisement_id
     );
     if (!advertisement)
       return res.status(400).json({
         success: false,
-        message: 'Advertisement not found!',
+        message: "Advertisement not found!",
         data: {},
       });
   }
@@ -133,13 +133,13 @@ export const update = async (req: Request, res: Response) => {
     const result = await campaignRepository.save(campaign);
     return res.status(200).send({
       success: true,
-      message: 'Link updated successfully',
+      message: "Link updated successfully",
       data: { campaign: result },
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong!',
+      message: "Something went wrong!",
       data: { error },
     });
   }
@@ -147,7 +147,7 @@ export const update = async (req: Request, res: Response) => {
 
 export const get = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const user = req['user'];
+  const user = req["user"];
 
   const campaignRepository = getRepository(Campaign);
   const campaign = await campaignRepository.findOne({
@@ -156,50 +156,50 @@ export const get = async (req: Request, res: Response) => {
       user: user,
       deleted_at: null,
     },
-    relations: ['advertisement'],
+    relations: ["advertisement"],
   });
   if (!campaign) {
     return res.status(500).json({
       success: false,
-      message: 'Link with this id not found!',
+      message: "Link with this id not found!",
       data: {},
     });
   } else {
     return res.status(200).json({
       success: true,
-      message: '',
+      message: "",
       data: { campaign },
     });
   }
 };
 
 export const getUserCampaigns = async (req: Request, res: Response) => {
-  const user = req['user'];
+  const user = req["user"];
   const campaignRepository = getRepository(Campaign);
   const campaigns = await campaignRepository.find({
     where: {
       user: user,
       deleted_at: null,
     },
-    relations: ['advertisement'],
+    relations: ["advertisement"],
   });
   if (!campaigns) {
     return res.status(500).json({
       success: false,
-      message: 'Links not found!',
+      message: "Links not found!",
       data: {},
     });
   } else {
     return res.status(200).json({
       success: true,
-      message: '',
+      message: "",
       data: { campaigns },
     });
   }
 };
 
 export const remove = async (req: Request, res: Response) => {
-  const user = req['user'];
+  const user = req["user"];
   const id = req.params.id;
 
   const campaign_exists = await getRepository(Campaign).findOne({
@@ -212,7 +212,7 @@ export const remove = async (req: Request, res: Response) => {
   if (!campaign_exists) {
     return res.status(400).json({
       success: false,
-      message: 'Sorry link with this ID not found',
+      message: "Sorry link with this ID not found",
       data: {},
     });
   }
@@ -223,26 +223,26 @@ export const remove = async (req: Request, res: Response) => {
       .createQueryBuilder()
       .update(Campaign)
       .set({ deleted_at: new Date() })
-      .where('id = :id', { id })
+      .where("id = :id", { id })
       .execute();
 
     if (campaign.affected) {
       return res.status(200).send({
         success: true,
-        message: 'Link deleted successfully',
+        message: "Link deleted successfully",
         data: {},
       });
     } else {
       return res.status(200).send({
         success: true,
-        message: 'You are not allowed to delete this link',
+        message: "You are not allowed to delete this link",
         data: {},
       });
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong!',
+      message: "Something went wrong!",
       data: { error },
     });
   }
@@ -257,10 +257,10 @@ export const view = async (req: Request, res: Response) => {
       internal_url,
       deleted_at: null,
     },
-    relations: ['advertisement'],
+    relations: ["advertisement"],
   });
   if (!campaign) {
-    res.render('pages/404', { campaign: {} });
+    res.render("pages/404", { campaign: {} });
   } else {
     if (campaign.advertisement) {
       var advertisement = await getRepository(Advertisement).findOne({
@@ -268,20 +268,20 @@ export const view = async (req: Request, res: Response) => {
           id: campaign.advertisement.id,
           deleted_at: null,
         },
-        relations: ['user'],
+        relations: ["user"],
       });
 
       if (advertisement) {
         const user = advertisement.user;
         const subscription = await user.getCurrentSubscriptionPlan();
-        advertisement['subscription'] = subscription;
+        advertisement["subscription"] = subscription;
         advertisement.user = null;
         campaign.advertisement = advertisement;
       } else {
         campaign.advertisement = null;
       }
     }
-    res.render('pages/index', {
+    res.render("pages/index", {
       campaign,
       config: { time: config.REDIRECT_TIME, redirect: config.REDIRECT },
     });
@@ -297,7 +297,7 @@ export const incrementViewCount = async (req: Request, res: Response) => {
         id: campaign_id,
         deleted_at: null,
       },
-      relations: ['advertisement'],
+      relations: ["advertisement"],
     });
     if (campaign) {
       campaign.views++;
@@ -309,16 +309,16 @@ export const incrementViewCount = async (req: Request, res: Response) => {
             id: result.advertisement.id,
             deleted_at: null,
           },
-          relations: ['user'],
+          relations: ["user"],
         });
         if (advertisement) {
           advertisement.views++;
           advertisement = await getRepository(Advertisement).save(
-            advertisement,
+            advertisement
           );
           const user = advertisement.user;
           const subscription = await user.getCurrentSubscriptionPlan();
-          advertisement['subscription'] = subscription;
+          advertisement["subscription"] = subscription;
           advertisement.user = null;
           result.advertisement = advertisement;
 
@@ -327,7 +327,7 @@ export const incrementViewCount = async (req: Request, res: Response) => {
           await getRepository(CampaignView).save(campaign_view);
           return res.status(200).json({
             success: true,
-            message: 'View updated Successfully',
+            message: "View updated Successfully",
             data: {},
           });
         }
@@ -336,7 +336,7 @@ export const incrementViewCount = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong',
+      message: "Something went wrong",
       data: {},
     });
   }
@@ -351,13 +351,13 @@ export const getAllCampaigns = async (req: Request, res: Response) => {
   if (!campaigns) {
     return res.status(400).json({
       success: false,
-      message: 'links not found!',
+      message: "links not found!",
       data: {},
     });
   } else {
     return res.status(200).json({
       success: true,
-      message: '',
+      message: "",
       data: { campaigns },
     });
   }
@@ -376,13 +376,13 @@ export const getStatistics = async (req: Request, res: Response) => {
     if (!campaign)
       return res.status(400).json({
         success: false,
-        message: 'Campign with this id not found',
+        message: "Campign with this id not found",
         data: {},
       });
     let starts_at = <any>req.query.starts_at;
     let ends_at = <any>req.query.ends_at;
-    starts_at = new Date(starts_at).toISOString().split('T')[0];
-    ends_at = new Date(ends_at).toISOString().split('T')[0];
+    starts_at = new Date(starts_at).toISOString().split("T")[0];
+    ends_at = new Date(ends_at).toISOString().split("T")[0];
     const campaigns = await getRepository(CampaignView).find({
       where: {
         campaign: campaign,
@@ -391,13 +391,13 @@ export const getStatistics = async (req: Request, res: Response) => {
     });
     return res.status(200).json({
       success: true,
-      message: '',
+      message: "",
       data: { campaigns },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Something went wrong',
+      message: "Something went wrong",
       data: { error },
     });
   }
